@@ -1,4 +1,4 @@
-﻿# ============================================================
+# ============================================================
 #  demo.jl  –  Minh hoa thuat toan LinkedQueue (DT070)
 #  Sinh vien: Pham Do Duy Thanh | MSSV: N24DCDT086
 #
@@ -93,7 +93,8 @@ function demo_ca_2()
     println("  [1] $( length(khach_den) ) khach xep hang vao cung:")
     for k in khach_den
         enqueue!(q, k)
-        println("     → Khach $(k) vao hang.  Hang: $(join(to_array(q), \", \"))")
+        hang_str = join(to_array(q), ", ")
+        println("     → Khach $(k) vao hang.  Hang: $(hang_str)")
     end
     println()
     println("  Trang thai hang sau khi xep:")
