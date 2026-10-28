@@ -1,12 +1,11 @@
-﻿# Algorithm Visualizer App (DT070)
+﻿# Hang doi DSLK co dau va cuoi (DT070)
 
-> **Do an mon hoc Cau truc Du lieu va Giai thuat (INT13185)**  
-> Hoc vien Cong nghe Buu chinh Vien thong (PTIT)  
-> Ung dung truc quan hoa thuat toan chuan Production.
+> **Do an mon hoc Cau truc Du lieu va Giai thuat (INT13185) – Nhom 03**
+> Hoc vien Cong nghe Buu chinh Vien thong (PTIT)
 
-![Python](https://img.shields.io/badge/Python-3.11-blue)
-![Flask](https://img.shields.io/badge/Flask-3.x-lightgrey)
-![Pytest](https://img.shields.io/badge/Tests-Pytest-brightgreen)
+![Julia](https://img.shields.io/badge/Julia-1.12-purple)
+![Tests](https://img.shields.io/badge/Tests-22%20ca%20%7C%20PASS-brightgreen)
+![CI](https://github.com/Noname06-PTIT/DT070-N24DCDT086--PhamDoDuyThanh/actions/workflows/julia.yml/badge.svg)
 
 ---
 
@@ -14,45 +13,59 @@
 
 ### 1. Nhan dien
 
-- **Ho va ten:** Pham Do Duy Thanh
-- **MSSV:** N24DCDT086
-- **Lop:** [Dien ten lop cua ban - VD: D24CQDT01-N]
-- **Ma de:** DT070
-- **Ten de:** [Dien ten de tai DT070 trong phieu]
-- **Duong dan phieu:** `05_Minh_chung_cu_the_91_de_tai.docx` (Muc DT070)
-- **Can cu giao trinh:** [Dien so chuong, muc, trang trong giao trinh CTDL&GT PTIT]
+| Truong | Noi dung |
+|---|---|
+| **Ho va ten** | Pham Do Duy Thanh |
+| **MSSV** | N24DCDT086 |
+| **Lop** | D24CQDT... (INT13185 – Nhom 03) |
+| **Ma de** | DT070 |
+| **Ten de** | Hang doi bang danh sach lien ket co dau va cuoi |
+| **Duong dan phieu** | `05_Minh_chung_cu_the_91_de_tai.docx` (Muc DT070) |
+| **Can cu giao trinh** | Giao trinh CTDL&GT PTIT – Chuong 2: Cau truc du lieu tuyen tinh (Hang doi – Queue), muc cai dat DSLK don co hai con tro head va tail |
 
 ### 2. Moi truong
 
-- **Ngon ngu:** Python 3.11
-- **Thu vien su dung:** `Flask>=3.0.0`, `pytest>=7.4.0`, `gunicorn>=21.2.0`
-- **Lenh cai dat:** `pip install -r requirements.txt`
+| Thanh phan | Chi tiet |
+|---|---|
+| **Ngon ngu** | Julia 1.12.7 |
+| **Thu vien** | Chi dung thu vien chuan `Test` (tich hop san) |
+| **Cai dat Julia** | https://julialang.org/downloads/ |
+| **Kiem tra phien ban** | `julia --version` |
 
 ### 3. Lenh
 
-- **Chay Vi du 1 (theo phieu de):**  
-  `python -c "from logic import liet_ke; print(liet_ke(3))"`
-- **Chay Vi du 2 (theo phieu de):**  
-  `python -c "from logic import liet_ke; print(liet_ke(4))"`
-- **Khoi chay giao dien Web:**  
-  `python app.py` (Truy cap `http://localhost:5000`)
-- **Chay toan bo kiem thu (hien thi chi tiet):**  
-  `pytest tests/test_logic.py -v -s`
-- **Chay do dac hieu nang (Benchmark):**  
-  `python benchmark.py`
+```bash
+# Chay Vi du 1 – Cac phep toan co ban
+julia --startup-file=no demo.jl --ca=1
+
+# Chay Vi du 2 – Mo phong hang cho xep hang
+julia --startup-file=no demo.jl --ca=2
+
+# Nhap du lieu moi (tuong tac tay)
+julia --startup-file=no demo.jl --nhap
+
+# Chay toan bo bo kiem thu (hien thi chi tiet)
+julia --startup-file=no test/runtests.jl
+
+# Hoac chay mot lenh chay tat ca (Windows)
+powershell -ExecutionPolicy Bypass -File .\Run_all.ps1
+```
 
 ### 4. Quy uoc
 
-- **Input:** Gia tri nguyen n >= 0, thoa man rang buoc cua de tai DT070.
-- **Thu tu chi so:** 1-based (bat dau tu 1) dong bo voi gia ma trong giao trinh.
-- **Output:** Danh sach cac ket qua, sap xep theo thu tu tu dien.
-- **Xu ly loi:** Nem `ValueError` va hien thi thong bao mau do khi nhap sai.
+- **Input:** Phan tu bat ky kieu T (mac dinh `Int` trong demo).
+- **Enqueue (them):** Them vao CUOI hang – cap nhat con tro `tail` – O(1).
+- **Dequeue (lay):** Lay tu DAU hang – cap nhat con tro `head` – O(1).
+- **Xu ly loi:** Nem `ArgumentError` khi `dequeue!`, `peek`, `rear` tren hang rong.
+- **Thu tu chay:** FIFO (First In – First Out); ca kiem tra V08 chay 1000 phan tu.
 
 ### 5. Minh chung
 
-- **Thu muc anh:** `docs/anh_ket_qua/` (Chua anh chup man hinh A01 den A11)
-- **Ma ca kiem thu & Ket qua:** Chi tiet tai Chuong 4 trong BaoCao.docx
-- **CI/CD tu dong:** GitHub Actions tu dong chay pytest moi lan push code
+- **Thu muc anh:** `docs/anh_ket_qua/` (chua anh chup man hinh A01 – A11)
+- **So ca kiem thu:** 22 ca (T01–T14 chuc nang, V01–V08 ngoai le)
+- **Tong phep kiem:** 127 / 127 dat (100%)
+- **SHA C (chay va chup anh):** 614c07b14fc431a1c808b9764b5a30b72112aa98
+- **CI tu dong:** GitHub Actions tu dong chay `test/runtests.jl` moi lan push
 
 ---
 
@@ -60,29 +73,61 @@
 
 ```text
 DT070-N24DCDT086--PhamDoDuyThanh/
-├── .github/workflows/python-app.yml  # CI/CD tu dong
-├── docs/anh_ket_qua/                 # Anh minh chung A01-A11
-├── templates/index.html              # Giao dien Web Visualizer
-├── tests/test_logic.py               # Bo kiem thu 8 ca
+├── .github/
+│   └── workflows/
+│       └── julia.yml            # CI/CD tu dong – GitHub Actions
+├── docs/
+│   └── anh_ket_qua/             # Anh minh chung A01 – A11
+├── src/
+│   └── LinkedQueue.jl           # Thuat toan loi: hang doi DSLK co dau & cuoi
+├── test/
+│   └── runtests.jl              # 22 ca kiem thu, 127 phep kiem – dat 100%
 ├── .gitignore
-├── app.py                            # Flask server & REST API
-├── logic.py                          # Thuat toan loi DT070
-├── benchmark.py                      # Do luong hieu nang
-└── requirements.txt
+├── demo.jl                      # File chay minh hoa (--ca=1, --ca=2, --nhap)
+├── Run_all.ps1                  # Script Windows chay tat ca mot lenh
+└── README.md
 ```
 
-## Huong dan cai dat & Chay
+## Thuat toan
 
-```bash
-# Cai dat thu vien
-pip install -r requirements.txt
+Hang doi (Queue) duoc cai dat bang **danh sach lien ket don** voi **hai con tro**:
 
-# Chay ung dung web
-python app.py
+```
+  HEAD (dau)                       TAIL (cuoi)
+    |                                  |
+    v                                  v
+  [A] --> [B] --> [C] --> [D] --> [E] --> nil
 
-# Chay kiem thu
-pytest tests/test_logic.py -v -s
+  Enqueue: them vao sau [E] → cap nhat TAIL
+  Dequeue: lay tu [A]      → cap nhat HEAD
+  Do phuc tap moi phep:    O(1)
+```
 
-# Chay benchmark
-python benchmark.py
+| Phep toan | Ham Julia | Do phuc tap |
+|---|---|---|
+| Khoi tao | `LinkedQueue{T}()` | O(1) |
+| Kiem tra rong | `isempty(q)` | O(1) |
+| Them cuoi | `enqueue!(q, val)` | O(1) |
+| Lay dau | `dequeue!(q)` | O(1) |
+| Xem dau | `peek(q)` / `front(q)` | O(1) |
+| Xem cuoi | `rear(q)` | O(1) |
+| Kich thuoc | `length(q)` | O(1) |
+| Xoa het | `clear!(q)` | O(1) |
+| Chuyen mang | `to_array(q)` | O(n) |
+
+## Vi du su dung nhanh
+
+```julia
+include("src/LinkedQueue.jl")
+
+q = LinkedQueue{Int}()
+enqueue!(q, 10); enqueue!(q, 20); enqueue!(q, 30)
+display_queue(q)
+# Hang doi (dau→cuoi): 10 → 20 → 30
+#   head=10  tail=30  size=3
+
+println(peek(q))   # 10
+println(rear(q))   # 30
+println(dequeue!(q))  # 10
+println(length(q))    # 2
 ```

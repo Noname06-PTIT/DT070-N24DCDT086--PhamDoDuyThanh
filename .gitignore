@@ -1,8 +1,13 @@
-﻿venv/
+﻿# Julia
+*.jl.cov
+*.jl.*.cov
+*.jl.mem
+/Manifest.toml
+.julia_history
+
+# Python (cu)
+venv/
 __pycache__/
-*.pyc
-*.pyo
 .pytest_cache/
+*.pyc
 .env
-.vscode/
-.idea/
