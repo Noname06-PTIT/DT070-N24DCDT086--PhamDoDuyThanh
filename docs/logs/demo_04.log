@@ -1,0 +1,25 @@
+$ julia --version
+julia version 1.12.7
+$ julia --startup-file=no demo.jl --ca=4
+=================================================================
+=== DEMO 4 (Anh A04): Ca tu thiet ke 2: Xu ly gia tri am va so 0 trong [-1000, 1000] ===
+=================================================================
+Nap chuoi gia tri chua so am, so 0 va bien: [-500, 0, 1000, -999]
+  + them!(-500) -> dau=-500, cuoi=-500, n=1
+  + them!(0) -> dau=-500, cuoi=0, n=2
+  + them!(1000) -> dau=-500, cuoi=1000, n=3
+  + them!(-999) -> dau=-500, cuoi=-999, n=4
+=== Hang doi sau khi nap day du ===
+So luong n: 4
+  dau  (head) --> Node(-500)
+  cuoi (tail) --> Node(-999)
+  Chuoi lien ket: [-500] -> [0] -> [1000] -> [-999] -> nothing
+  Bat bien hop le: true
+
+Tien hanh lay lan luot tat ca cac phan tu:
+Ket qua lay ra:  [-500, 0, 1000, -999]
+Ky vong ban dau: [-500, 0, 1000, -999]
+So khop FIFO:    DUNG (Chinh xac 100%)
+Trang thai cuoi: dau=nothing, cuoi=nothing, la_rong=true
+
+[EXIT CODE: 0]

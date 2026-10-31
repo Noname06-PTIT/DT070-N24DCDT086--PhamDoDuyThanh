@@ -1,0 +1,9 @@
+$ julia --version
+julia version 1.12.7
+$ julia --startup-file=no test/verify_exhaustive.jl
+ORACLE: Bat dau kiem chung doc lap voi Mo hinh Hang doi Mang...
+EXHAUSTIVE_OK total_operations=20000 so_them=11039 so_lay=5987 so_xem=2974
+ORACLE=Vector FIFO Reference Model; Invariants, head, tail, and elements matched 100%.
+Tat ca 20.000 phep kiem chung ngau nhien deu hoan thanh xuat sac voi ma thoat 0.
+
+[EXIT CODE: 0]

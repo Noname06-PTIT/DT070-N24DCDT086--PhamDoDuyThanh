@@ -1,0 +1,26 @@
+$ julia --version
+julia version 1.12.7
+$ julia --startup-file=no demo.jl --ca=8
+=================================================================
+=== DEMO 8 (Anh A08): Phan hoi du lieu khong hop le (Ngoai le va Validator) ===
+=================================================================
+DT070 - MINH HOA TU CHOI DU LIEU KHONG HOP LE
+Cac dieu kien kiem tra theo hop dong phieu:
+  1. Gia tri ngoai mien [-1000, 1000]
+  2. Du lieu dau vao nothing hoac sai kieu
+  3. Lenh thao tac khong hop le
+
+Thu nghiem 1: Gia tri them x = 1500 (ngoai [-1000, 1000]):
+  DA TU CHOI DU LIEU: ArgumentError: Lá»—i táº¡i pháº§n tá»­ 1: GiÃ¡ trá»‹ 1500 náº±m ngoÃ i pháº¡m vi [-1000, 1000]!
+
+Thu nghiem 2: Lenh khong hop le (:lenh_sai):
+  DA TU CHOI DU LIEU: ArgumentError: Lá»—i táº¡i pháº§n tá»­ 1: Lá»‡nh 'lenh_sai' khÃ´ng há»£p lá»‡!
+
+Thu nghiem 3: Lay phan tu tren hang doi rong:
+  DA TU CHOI DU LIEU: ArgumentError: Lá»—i: HÃ ng Ä‘á»£i rá»—ng, khÃ´ng thá»ƒ láº¥y pháº§n tá»­ (Underflow)!
+
+-----------------------------------------------------------------
+KET QUA MINH HOA: DUNG; tat ca loi du kien da duoc bat an toan.
+Ma thoat 0 chi danh cho demo bat loi dung nhu mong doi.
+
+[EXIT CODE: 0]

@@ -1,0 +1,22 @@
+$ julia --version
+julia version 1.12.7
+$ julia --startup-file=no demo.jl --ca=5
+=================================================================
+=== DEMO 5 (Anh A05): Ca bien 1: Hang doi rong (Kich thuoc nho nhat n=0) ===
+=================================================================
+Trang thai hang moi khoi tao:
+  - la_rong(q):    true
+  - kich_thuoc(q): 0
+  - q.dau:         nothing
+  - q.cuoi:        nothing
+  - Bat bien:      true
+
+Thu lay!(q) tren hang doi rong:
+  => Bat ngoai le ArgumentError thanh cong: ArgumentError: Lá»—i: HÃ ng Ä‘á»£i rá»—ng, khÃ´ng thá»ƒ láº¥y pháº§n tá»­ (Underflow)!
+
+Thu xem_dau(q) tren hang doi rong:
+  => Bat ngoai le ArgumentError thanh cong: ArgumentError: Lá»—i: HÃ ng Ä‘á»£i rá»—ng, khÃ´ng thá»ƒ xem Ä‘áº§u!
+
+Ket luan: Hang doi rong duoc xu ly an toan tuyet doi theo Ca 1 cua phieu.
+
+[EXIT CODE: 0]

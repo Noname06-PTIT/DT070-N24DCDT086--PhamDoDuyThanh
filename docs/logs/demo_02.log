@@ -1,0 +1,52 @@
+$ julia --version
+julia version 1.12.7
+$ julia --startup-file=no demo.jl --ca=2
+=================================================================
+=== DEMO 2 (Anh A02): Vi du 2 tren phieu: them(5); lay(); them(8) ===
+=================================================================
+Input theo phieu: them(5); lay(); them(8)
+=== Buoc 0: Khoi tao rong ===
+So luong n: 0
+Trang thai: RONG
+  dau  (head) --> nothing
+  cuoi (tail) --> nothing
+  Bat bien hop le: true
+
+Buoc 1: them!(q, 5)
+=== Sau them 5 ===
+So luong n: 1
+  dau  (head) --> Node(5)
+  cuoi (tail) --> Node(5)
+  Chuoi lien ket: [5] -> nothing
+  Bat bien hop le: true
+
+Buoc 2: v = lay!(q)
+  -> Gia tri lay ra: 5 (Ky vong: 5)
+=== Sau lay() (Hang doi tro ve rong) ===
+So luong n: 0
+Trang thai: RONG
+  dau  (head) --> nothing
+  cuoi (tail) --> nothing
+  Bat bien hop le: true
+
+  Kiem tra khi rong: dau === nothing (true), cuoi === nothing (true)
+Buoc 3: them!(q, 8)
+=== Sau them 8 ===
+So luong n: 1
+  dau  (head) --> Node(8)
+  cuoi (tail) --> Node(8)
+  Chuoi lien ket: [8] -> nothing
+  Bat bien hop le: true
+
+-----------------------------------------------------------------
+KET QUA CHINH VI DU 2:
+  - Gia tri lay ra: 5
+  - Danh sach FIFO: [8]
+  - Con tro dau:    Node(8)
+  - Con tro cuoi:   Node(8)
+  - dau === cuoi:   true
+NHAN XET:
+  Sau khi lay nut 5 lam hang doi tro ve rong, phai xoa ca con tro cuoi cu
+  (cuoi = nothing) de tranh loi con tro rac truoc khi tao hang moi chua 8.
+
+[EXIT CODE: 0]

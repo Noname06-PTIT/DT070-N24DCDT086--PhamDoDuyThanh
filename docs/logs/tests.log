@@ -1,0 +1,16 @@
+$ julia --version
+julia version 1.12.7
+$ julia --startup-file=no test/runtests.jl
+=================================================================
+CHAY KIEM THU TU DONG - DE TAI DT070
+Hang doi bang danh sach lien ket co dau va cuoi (LinkedQueue)
+Sinh vien: Pham Do Duy Thanh - MSSV: N24DCDT086 - Lop: D24CQDT01-N
+=================================================================
+Test Summary:                                          | Pass  Total  Time
+DT070 - Kiem thu toan dien Hang doi danh sach lien ket |  244    244  0.6s
+
+=================================================================
+KET QUA: TAT CA CAC CA KIEM THU DA PASS 100%!
+=================================================================
+
+[EXIT CODE: 0]

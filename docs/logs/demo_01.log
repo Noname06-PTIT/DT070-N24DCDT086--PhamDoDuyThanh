@@ -1,0 +1,60 @@
+$ julia --version
+julia version 1.12.7
+$ julia --startup-file=no demo.jl --ca=1
+=================================================================
+=== DEMO 1 (Anh A01): Vi du 1 tren phieu: them(4); them(7); lay(); them(9) ===
+=================================================================
+Input theo phieu: them(4); them(7); lay(); them(9)
+Khoi tao hang doi rong...
+=== Buoc 0: Khoi tao rong ===
+So luong n: 0
+Trang thai: RONG
+  dau  (head) --> nothing
+  cuoi (tail) --> nothing
+  Bat bien hop le: true
+
+Buoc 1: them!(q, 4)
+=== Sau them 4 ===
+So luong n: 1
+  dau  (head) --> Node(4)
+  cuoi (tail) --> Node(4)
+  Chuoi lien ket: [4] -> nothing
+  Bat bien hop le: true
+
+Buoc 2: them!(q, 7)
+=== Sau them 7 ===
+So luong n: 2
+  dau  (head) --> Node(4)
+  cuoi (tail) --> Node(7)
+  Chuoi lien ket: [4] -> [7] -> nothing
+  Bat bien hop le: true
+
+Buoc 3: v = lay!(q)
+  -> Gia tri lay ra: 4 (Ky vong: 4)
+=== Sau lay() ===
+So luong n: 1
+  dau  (head) --> Node(7)
+  cuoi (tail) --> Node(7)
+  Chuoi lien ket: [7] -> nothing
+  Bat bien hop le: true
+
+Buoc 4: them!(q, 9)
+=== Sau them 9 ===
+So luong n: 2
+  dau  (head) --> Node(7)
+  cuoi (tail) --> Node(9)
+  Chuoi lien ket: [7] -> [9] -> nothing
+  Bat bien hop le: true
+
+-----------------------------------------------------------------
+KET QUA CHINH VI DU 1:
+  - Gia tri lay ra: 4
+  - Danh sach FIFO: [7, 9]
+  - So phan tu n:   2
+  - Con tro dau:    Node(7)
+  - Con tro cuoi:   Node(9)
+NHAN XET:
+  Them 9 noi truc tiep sau cuoi hien tai la 7 qua cuoi.tiep = nut_moi;
+  khong can duyet tu nut dau de tim cuoi, chi phi dat O(1).
+
+[EXIT CODE: 0]

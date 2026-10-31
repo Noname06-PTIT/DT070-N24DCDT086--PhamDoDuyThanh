@@ -1,0 +1,43 @@
+$ julia --version
+julia version 1.12.7
+$ julia --startup-file=no scripts/trace_and_scales.jl
+=================================================================
+BANG TRACE CHI TIET VI DU 1: them(4); them(7); lay(); them(9)
+Buoc | Lenh | Con tro dau | Con tro cuoi | n | Chuoi lien ket
+-----------------------------------------------------------------
+  0  | Khoi tao | nothing     | nothing      | 0 | (rong)
+  1  | them(4)  | Node(4)     | Node(4)      | 1 | [4] -> nothing
+  2  | them(7)  | Node(4)     | Node(7)      | 2 | [4] -> [7] -> nothing
+  3  | lay()=4 | Node(7)     | Node(7)      | 1 | [7] -> nothing
+  4  | them(9)  | Node(7)     | Node(9)      | 2 | [7] -> [9] -> nothing
+Doi chieu ket qua: FIFO=[7, 9], n=2 -> KHOP 100% VOI PHIEU GIAO DE TAI.
+
+=================================================================
+BANG TRACE CHI TIET VI DU 2: them(5); lay(); them(8)
+Buoc | Lenh | Con tro dau | Con tro cuoi | n | Chuoi lien ket
+-----------------------------------------------------------------
+  0  | Khoi tao | nothing     | nothing      | 0 | (rong)
+  1  | them(5)  | Node(5)     | Node(5)      | 1 | [5] -> nothing
+  2  | lay()=5| nothing     | nothing      | 0 | (rong - cuoi duoc xoa)
+  3  | them(8)  | Node(8)     | Node(8)      | 1 | [8] -> nothing
+Doi chieu ket qua: FIFO=[8], dau=cuoi=Node(8) -> KHOP 100% VOI PHIEU GIAO DE TAI.
+
+=================================================================
+KHAO SAT SO PHEP TOAN LIEN KET THEO 3 QUY MO n = 10, 50, 200
+(Can cu theo muc Phan tich va nhan xet trong Phieu giao de tai DT070)
+-----------------------------------------------------------------
+Quy mo m | Co con tro cuoi (O(1)) | Khong co con tro cuoi (O(n)) | Ti le tiet kiem
+-----------------------------------------------------------------
+m = 10   | 30                     | 65                           | Giam 2.2 lan
+m = 50   | 150                    | 1325                         | Giam 8.8 lan
+m = 200  | 600                    | 20300                        | Giam 33.8 lan
+-----------------------------------------------------------------
+NHAN XET:
+  1. Khi co con tro cuoi, moi thao tac them chi mat dung 3 phep toan lien ket O(1),
+     tong chi phi cho m lenh them la 3*m = O(m).
+  2. Neu bo con tro cuoi, moi lan them phai duyet tu dau danh sach (k-1 phep doc),
+     tong chi phi tro thanh m*(m-1)/2 + 2*m = O(m^2).
+  3. O quy mo m = 200, viec giu con tro cuoi tiet kiem toi 33.8 lan so phep toan.
+=================================================================
+
+[EXIT CODE: 0]

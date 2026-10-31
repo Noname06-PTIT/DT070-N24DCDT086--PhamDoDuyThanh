@@ -1,0 +1,41 @@
+$ julia --version
+julia version 1.12.7
+$ julia --startup-file=no demo.jl --ca=3
+=================================================================
+=== DEMO 3 (Anh A03): Ca tu thiet ke 1: Buffer hang doi da chu ky (Xen ke them/lay) ===
+=================================================================
+Mo phong hang doi tien trinh / tac vu phuc vu voi chuoi 8 thao tac:
+Pha 1: Nap 3 tac vu ban dau [100, 200, 300]
+=== Sau Pha 1 ===
+So luong n: 3
+  dau  (head) --> Node(100)
+  cuoi (tail) --> Node(300)
+  Chuoi lien ket: [100] -> [200] -> [300] -> nothing
+  Bat bien hop le: true
+
+Pha 2: Phuc vu 1 tac vu o dau
+  -> Phuc vu: 100 | Hang con lai: [200, 300]
+Pha 3: Nap them 2 tac vu moi [400, 500]
+=== Sau Pha 3 ===
+So luong n: 4
+  dau  (head) --> Node(200)
+  cuoi (tail) --> Node(500)
+  Chuoi lien ket: [200] -> [300] -> [400] -> [500] -> nothing
+  Bat bien hop le: true
+
+Pha 4: Phuc vu tiep 2 tac vu o dau
+  -> Phuc vu: 200
+  -> Phuc vu: 300
+=== Sau Pha 4 ===
+So luong n: 2
+  dau  (head) --> Node(400)
+  cuoi (tail) --> Node(500)
+  Chuoi lien ket: [400] -> [500] -> nothing
+  Bat bien hop le: true
+
+Tong ket ca tu thiet ke 1:
+  - Cac tac vu da phuc vu: [100, 200, 300] (Dung thu tu den truoc: 100, 200, 300)
+  - Cac tac vu con lai:     [400, 500] (Ky vong: [400, 500])
+  - Bat bien toan ven:      DUNG
+
+[EXIT CODE: 0]

@@ -1,0 +1,33 @@
+$ julia --version
+julia version 1.12.7
+$ julia --startup-file=no scripts/test_catalog.jl
+CATALOG | id | input | expected | actual | result
+CATALOG | T01 | tao_hang_doi() | so_luong=0; dau=nothing; cuoi=nothing | so_luong=0; dau=nothing; cuoi=nothing | PASS
+CATALOG | T02 | them!(q, 10) | n=1; dau.val=10; cuoi.val=10; dau===cuoi | n=1; dau.val=10; cuoi.val=10; dau===cuoi | PASS
+CATALOG | T03 | them!(10, 20, 30) | n=3; xem_dau=10; xem_cuoi=30; FIFO=[10,20,30] | n=3; xem_dau=10; xem_cuoi=30; FIFO=[10, 20, 30] | PASS
+CATALOG | T04 | them 10,20,30; lay() | lay=10; con lai [20,30]; n=2 | lay=10; con lai [20, 30]; n=2 | PASS
+CATALOG | T05 | Hang moi; lay() | ArgumentError (Underflow) | ArgumentError (Underflow) | PASS
+CATALOG | T06 | them 1,2,3; lay het | lay lan luot 1,2,3; cuoi cung rong | lay=[1, 2, 3]; la_rong=true | PASS
+CATALOG | T07 | them 6; xem_dau 2 lan | xem1=6; xem2=6; n=1 khong doi | xem1=6; xem2=6; n=1 | PASS
+CATALOG | T08 | them 2; lay; them 3; lay | lay1=2; lay2=3; cuoi cung rong | lay1=2; lay2=3; la_rong=true | PASS
+CATALOG | T09 | them 4,4; lay 1 | lay=4; con lai [4]; n=1; dau===cuoi | lay=4; con lai [4]; n=1 | PASS
+CATALOG | T10 | them(4,7); lay(); them(9) | lay=4; FIFO=[7,9]; n=2 | lay=4; FIFO=[7, 9]; n=2 | PASS
+CATALOG | T11 | them(5); lay(); them(8) | lay=5; FIFO=[8]; dau=cuoi=Node(8) | lay=5; FIFO=[8]; dau=cuoi=8 | PASS
+CATALOG | T12 | xem_dau va xem_cuoi | dau=50; cuoi=60; n=2 | dau=50; cuoi=60; n=2 | PASS
+CATALOG | T13 | Kiem tra bat bien 50 buoc | cuoi.tiep===nothing; kiem_tra_bat_bien=true | cuoi.tiep=nothing; bat_bien=true | PASS
+CATALOG | T14 | Duyet dem_so_nut_duyet | dem_so_nut_duyet == q.so_luong | dem_truoc=10; dem_sau=8; khop 100% | PASS
+CATALOG | T15 | Quy mo lon n=200 | lay du 1..200; cuoi cung rong | da lay 200 phan tu; la_rong=true | PASS
+CATALOG | T16 | giai_bai(hon hop) | ket qua [2,3]; n=2 | mang=[2, 3]; n=2 | PASS
+CATALOG | T17 | Kieu String va Float64 | lay String='A'; lay Float64=1.5 | str=A; flt=1.5 | PASS
+CATALOG | V01 | lay!(hang_rong) | ArgumentError | ArgumentError | PASS
+CATALOG | V02 | xem_dau(hang_rong) | ArgumentError | ArgumentError | PASS
+CATALOG | V03 | xem_cuoi(hang_rong) | ArgumentError | ArgumentError | PASS
+CATALOG | V04 | kiem_tra_dau_vao(nothing) | ArgumentError | ArgumentError | PASS
+CATALOG | V05 | kiem_tra_dau_vao(chuoi) | ArgumentError | ArgumentError | PASS
+CATALOG | V06 | kiem_tra_dau_vao(lenh_sai) | ArgumentError | ArgumentError | PASS
+CATALOG | V07 | kiem_tra_dau_vao((:them,)) | ArgumentError | ArgumentError | PASS
+CATALOG | V08 | kiem_tra_dau_vao(x=1500) | ArgumentError | ArgumentError | PASS
+CATALOG | V09 | kiem_tra_dau_vao(x=3.14) | ArgumentError | ArgumentError | PASS
+CATALOG_OK functional_cases=17 helper_validator_cases=9 total_cases=26
+
+[EXIT CODE: 0]

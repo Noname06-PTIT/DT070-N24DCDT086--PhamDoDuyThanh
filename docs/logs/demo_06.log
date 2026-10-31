@@ -1,0 +1,36 @@
+$ julia --version
+julia version 1.12.7
+$ julia --startup-file=no demo.jl --ca=6
+=================================================================
+=== DEMO 6 (Anh A06): Ca bien 2: Phan tu trung gia tri: them(4,4); lay 1 (Ca 5 tren phieu) ===
+=================================================================
+Input theo phieu: them(4); them(4); lay()
+Buoc 1: them!(q, 4)
+Buoc 2: them!(q, 4)
+=== Sau khi them hai so 4 ===
+So luong n: 2
+  dau  (head) --> Node(4)
+  cuoi (tail) --> Node(4)
+  Chuoi lien ket: [4] -> [4] -> nothing
+  Bat bien hop le: true
+
+Buoc 3: v = lay!(q)
+  -> Gia tri lay ra: 4 (Ky vong: 4)
+=== Sau khi lay mot phan tu ===
+So luong n: 1
+  dau  (head) --> Node(4)
+  cuoi (tail) --> Node(4)
+  Chuoi lien ket: [4] -> nothing
+  Bat bien hop le: true
+
+-----------------------------------------------------------------
+KET QUA CA BIEN 2:
+  - Con lai:        [4] (Ky vong: [4])
+  - So luong n:     1 (Ky vong: 1)
+  - dau === cuoi:   true (Cung tro ve nut 4 duy nhat)
+  - cuoi.tiep:      nothing (Ky vong: nothing)
+NHAN XET:
+  Moi phan tu du trung gia tri van duoc cap phat thanh mot Node doc lap;
+  khi lay mot phan tu, nut con lai van duoc giu nguyen ven khong bi anh huong.
+
+[EXIT CODE: 0]

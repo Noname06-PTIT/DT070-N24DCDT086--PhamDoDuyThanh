@@ -1,0 +1,17 @@
+$ git log -1 --stat
+commit 614c07b14fc431a1c808b9764b5a30b72112aa98
+Author: Noname06-PTIT <phamdoduythanh.06052006@gmail.com>
+Date:   Sun Oct 25 23:47:15 2026 +0700
+
+    Chot ma nguon va kiem thu DT070 (Commit C)
+
+ .gitignore         |   6 ++
+ README.md          |  77 ++++++++++++++
+ Run_all.ps1        |  13 +++
+ demo.jl            | 276 ++++++++++++++++++++++++++++++++++++++++++++++++
+ src/DeTai.jl       |   9 ++
+ src/LinkedQueue.jl | 303 +++++++++++++++++++++++++++++++++++++++++++++++++++++
+ test/runtests.jl   | 254 ++++++++++++++++++++++++++++++++++++++++++++
+ 7 files changed, 938 insertions(+)
+
+[EXIT CODE: 0]

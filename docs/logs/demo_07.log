@@ -1,0 +1,19 @@
+$ julia --version
+julia version 1.12.7
+$ julia --startup-file=no demo.jl --ca=7
+=================================================================
+=== DEMO 7 (Anh A07): Ca bien 3: Chuyen trang thai rong va xem dau hai lan (Ca 4 va Ca 3) ===
+=================================================================
+--- PHAN A: Ca 4 tren phieu: them 2; lay; them 3; lay -> 2,3 cuoi rong ---
+  - Gia tri lay lan 1: 2 (Ky vong: 2)
+  - Gia tri lay lan 2: 3 (Ky vong: 3)
+  - Trang thai cuoi:   la_rong=true, dau=nothing, cuoi=nothing
+
+--- PHAN B: Ca 3 tren phieu: them 6; xem hai lan -> 6,6 ma n=1 khong doi ---
+  - xem_dau lan 1: 6 (Ky vong: 6)
+  - xem_dau lan 2: 6 (Ky vong: 6)
+  - So luong n:    1 (Ky vong: 1)
+  - FIFO hien tai: [6] (Ky vong: [6])
+Ket luan: Cac ca bien tren phieu de tai deu dat chuan 100%.
+
+[EXIT CODE: 0]

@@ -1,0 +1,343 @@
+$ git clone <kho_ma_cuc_bo> DT070_clone
+CLONE_LOCAL_OK
+$ git rev-parse HEAD
+27e66d55a608e3abfbb34e6a5669785305406d4e
+$ .\Run_all.ps1
+julia version 1.12.7
+=== DEMO 1 ===
+=================================================================
+=== DEMO 1 (Anh A01): Vi du 1 tren phieu: them(4); them(7); lay(); them(9) ===
+=================================================================
+Input theo phieu: them(4); them(7); lay(); them(9)
+Khoi tao hang doi rong...
+=== Buoc 0: Khoi tao rong ===
+So luong n: 0
+Trang thai: RONG
+  dau  (head) --> nothing
+  cuoi (tail) --> nothing
+  Bat bien hop le: true
+
+Buoc 1: them!(q, 4)
+=== Sau them 4 ===
+So luong n: 1
+  dau  (head) --> Node(4)
+  cuoi (tail) --> Node(4)
+  Chuoi lien ket: [4] -> nothing
+  Bat bien hop le: true
+
+Buoc 2: them!(q, 7)
+=== Sau them 7 ===
+So luong n: 2
+  dau  (head) --> Node(4)
+  cuoi (tail) --> Node(7)
+  Chuoi lien ket: [4] -> [7] -> nothing
+  Bat bien hop le: true
+
+Buoc 3: v = lay!(q)
+  -> Gia tri lay ra: 4 (Ky vong: 4)
+=== Sau lay() ===
+So luong n: 1
+  dau  (head) --> Node(7)
+  cuoi (tail) --> Node(7)
+  Chuoi lien ket: [7] -> nothing
+  Bat bien hop le: true
+
+Buoc 4: them!(q, 9)
+=== Sau them 9 ===
+So luong n: 2
+  dau  (head) --> Node(7)
+  cuoi (tail) --> Node(9)
+  Chuoi lien ket: [7] -> [9] -> nothing
+  Bat bien hop le: true
+
+-----------------------------------------------------------------
+KET QUA CHINH VI DU 1:
+  - Gia tri lay ra: 4
+  - Danh sach FIFO: [7, 9]
+  - So phan tu n:   2
+  - Con tro dau:    Node(7)
+  - Con tro cuoi:   Node(9)
+NHAN XET:
+  Them 9 noi truc tiep sau cuoi hien tai la 7 qua cuoi.tiep = nut_moi;
+  khong can duyet tu nut dau de tim cuoi, chi phi dat O(1).
+=== DEMO 2 ===
+=================================================================
+=== DEMO 2 (Anh A02): Vi du 2 tren phieu: them(5); lay(); them(8) ===
+=================================================================
+Input theo phieu: them(5); lay(); them(8)
+=== Buoc 0: Khoi tao rong ===
+So luong n: 0
+Trang thai: RONG
+  dau  (head) --> nothing
+  cuoi (tail) --> nothing
+  Bat bien hop le: true
+
+Buoc 1: them!(q, 5)
+=== Sau them 5 ===
+So luong n: 1
+  dau  (head) --> Node(5)
+  cuoi (tail) --> Node(5)
+  Chuoi lien ket: [5] -> nothing
+  Bat bien hop le: true
+
+Buoc 2: v = lay!(q)
+  -> Gia tri lay ra: 5 (Ky vong: 5)
+=== Sau lay() (Hang doi tro ve rong) ===
+So luong n: 0
+Trang thai: RONG
+  dau  (head) --> nothing
+  cuoi (tail) --> nothing
+  Bat bien hop le: true
+
+  Kiem tra khi rong: dau === nothing (true), cuoi === nothing (true)
+Buoc 3: them!(q, 8)
+=== Sau them 8 ===
+So luong n: 1
+  dau  (head) --> Node(8)
+  cuoi (tail) --> Node(8)
+  Chuoi lien ket: [8] -> nothing
+  Bat bien hop le: true
+
+-----------------------------------------------------------------
+KET QUA CHINH VI DU 2:
+  - Gia tri lay ra: 5
+  - Danh sach FIFO: [8]
+  - Con tro dau:    Node(8)
+  - Con tro cuoi:   Node(8)
+  - dau === cuoi:   true
+NHAN XET:
+  Sau khi lay nut 5 lam hang doi tro ve rong, phai xoa ca con tro cuoi cu
+  (cuoi = nothing) de tranh loi con tro rac truoc khi tao hang moi chua 8.
+=== DEMO 3 ===
+=================================================================
+=== DEMO 3 (Anh A03): Ca tu thiet ke 1: Buffer hang doi da chu ky (Xen ke them/lay) ===
+=================================================================
+Mo phong hang doi tien trinh / tac vu phuc vu voi chuoi 8 thao tac:
+Pha 1: Nap 3 tac vu ban dau [100, 200, 300]
+=== Sau Pha 1 ===
+So luong n: 3
+  dau  (head) --> Node(100)
+  cuoi (tail) --> Node(300)
+  Chuoi lien ket: [100] -> [200] -> [300] -> nothing
+  Bat bien hop le: true
+
+Pha 2: Phuc vu 1 tac vu o dau
+  -> Phuc vu: 100 | Hang con lai: [200, 300]
+Pha 3: Nap them 2 tac vu moi [400, 500]
+=== Sau Pha 3 ===
+So luong n: 4
+  dau  (head) --> Node(200)
+  cuoi (tail) --> Node(500)
+  Chuoi lien ket: [200] -> [300] -> [400] -> [500] -> nothing
+  Bat bien hop le: true
+
+Pha 4: Phuc vu tiep 2 tac vu o dau
+  -> Phuc vu: 200
+  -> Phuc vu: 300
+=== Sau Pha 4 ===
+So luong n: 2
+  dau  (head) --> Node(400)
+  cuoi (tail) --> Node(500)
+  Chuoi lien ket: [400] -> [500] -> nothing
+  Bat bien hop le: true
+
+Tong ket ca tu thiet ke 1:
+  - Cac tac vu da phuc vu: [100, 200, 300] (Dung thu tu den truoc: 100, 200, 300)
+  - Cac tac vu con lai:     [400, 500] (Ky vong: [400, 500])
+  - Bat bien toan ven:      DUNG
+=== DEMO 4 ===
+=================================================================
+=== DEMO 4 (Anh A04): Ca tu thiet ke 2: Xu ly gia tri am va so 0 trong [-1000, 1000] ===
+=================================================================
+Nap chuoi gia tri chua so am, so 0 va bien: [-500, 0, 1000, -999]
+  + them!(-500) -> dau=-500, cuoi=-500, n=1
+  + them!(0) -> dau=-500, cuoi=0, n=2
+  + them!(1000) -> dau=-500, cuoi=1000, n=3
+  + them!(-999) -> dau=-500, cuoi=-999, n=4
+=== Hang doi sau khi nap day du ===
+So luong n: 4
+  dau  (head) --> Node(-500)
+  cuoi (tail) --> Node(-999)
+  Chuoi lien ket: [-500] -> [0] -> [1000] -> [-999] -> nothing
+  Bat bien hop le: true
+
+Tien hanh lay lan luot tat ca cac phan tu:
+Ket qua lay ra:  [-500, 0, 1000, -999]
+Ky vong ban dau: [-500, 0, 1000, -999]
+So khop FIFO:    DUNG (Chinh xac 100%)
+Trang thai cuoi: dau=nothing, cuoi=nothing, la_rong=true
+=== DEMO 5 ===
+=================================================================
+=== DEMO 5 (Anh A05): Ca bien 1: Hang doi rong (Kich thuoc nho nhat n=0) ===
+=================================================================
+Trang thai hang moi khoi tao:
+  - la_rong(q):    true
+  - kich_thuoc(q): 0
+  - q.dau:         nothing
+  - q.cuoi:        nothing
+  - Bat bien:      true
+
+Thu lay!(q) tren hang doi rong:
+  => Bat ngoai le ArgumentError thanh cong: ArgumentError: Lá»—i: HÃ ng Ä‘á»£i rá»—ng, khÃ´ng thá»ƒ láº¥y pháº§n tá»­ (Underflow)!
+
+Thu xem_dau(q) tren hang doi rong:
+  => Bat ngoai le ArgumentError thanh cong: ArgumentError: Lá»—i: HÃ ng Ä‘á»£i rá»—ng, khÃ´ng thá»ƒ xem Ä‘áº§u!
+
+Ket luan: Hang doi rong duoc xu ly an toan tuyet doi theo Ca 1 cua phieu.
+=== DEMO 6 ===
+=================================================================
+=== DEMO 6 (Anh A06): Ca bien 2: Phan tu trung gia tri: them(4,4); lay 1 (Ca 5 tren phieu) ===
+=================================================================
+Input theo phieu: them(4); them(4); lay()
+Buoc 1: them!(q, 4)
+Buoc 2: them!(q, 4)
+=== Sau khi them hai so 4 ===
+So luong n: 2
+  dau  (head) --> Node(4)
+  cuoi (tail) --> Node(4)
+  Chuoi lien ket: [4] -> [4] -> nothing
+  Bat bien hop le: true
+
+Buoc 3: v = lay!(q)
+  -> Gia tri lay ra: 4 (Ky vong: 4)
+=== Sau khi lay mot phan tu ===
+So luong n: 1
+  dau  (head) --> Node(4)
+  cuoi (tail) --> Node(4)
+  Chuoi lien ket: [4] -> nothing
+  Bat bien hop le: true
+
+-----------------------------------------------------------------
+KET QUA CA BIEN 2:
+  - Con lai:        [4] (Ky vong: [4])
+  - So luong n:     1 (Ky vong: 1)
+  - dau === cuoi:   true (Cung tro ve nut 4 duy nhat)
+  - cuoi.tiep:      nothing (Ky vong: nothing)
+NHAN XET:
+  Moi phan tu du trung gia tri van duoc cap phat thanh mot Node doc lap;
+  khi lay mot phan tu, nut con lai van duoc giu nguyen ven khong bi anh huong.
+=== DEMO 7 ===
+=================================================================
+=== DEMO 7 (Anh A07): Ca bien 3: Chuyen trang thai rong va xem dau hai lan (Ca 4 va Ca 3) ===
+=================================================================
+--- PHAN A: Ca 4 tren phieu: them 2; lay; them 3; lay -> 2,3 cuoi rong ---
+  - Gia tri lay lan 1: 2 (Ky vong: 2)
+  - Gia tri lay lan 2: 3 (Ky vong: 3)
+  - Trang thai cuoi:   la_rong=true, dau=nothing, cuoi=nothing
+
+--- PHAN B: Ca 3 tren phieu: them 6; xem hai lan -> 6,6 ma n=1 khong doi ---
+  - xem_dau lan 1: 6 (Ky vong: 6)
+  - xem_dau lan 2: 6 (Ky vong: 6)
+  - So luong n:    1 (Ky vong: 1)
+  - FIFO hien tai: [6] (Ky vong: [6])
+Ket luan: Cac ca bien tren phieu de tai deu dat chuan 100%.
+=== DEMO 8 ===
+=================================================================
+=== DEMO 8 (Anh A08): Phan hoi du lieu khong hop le (Ngoai le va Validator) ===
+=================================================================
+DT070 - MINH HOA TU CHOI DU LIEU KHONG HOP LE
+Cac dieu kien kiem tra theo hop dong phieu:
+  1. Gia tri ngoai mien [-1000, 1000]
+  2. Du lieu dau vao nothing hoac sai kieu
+  3. Lenh thao tac khong hop le
+
+Thu nghiem 1: Gia tri them x = 1500 (ngoai [-1000, 1000]):
+  DA TU CHOI DU LIEU: ArgumentError: Lá»—i táº¡i pháº§n tá»­ 1: GiÃ¡ trá»‹ 1500 náº±m ngoÃ i pháº¡m vi [-1000, 1000]!
+
+Thu nghiem 2: Lenh khong hop le (:lenh_sai):
+  DA TU CHOI DU LIEU: ArgumentError: Lá»—i táº¡i pháº§n tá»­ 1: Lá»‡nh 'lenh_sai' khÃ´ng há»£p lá»‡!
+
+Thu nghiem 3: Lay phan tu tren hang doi rong:
+  DA TU CHOI DU LIEU: ArgumentError: Lá»—i: HÃ ng Ä‘á»£i rá»—ng, khÃ´ng thá»ƒ láº¥y pháº§n tá»­ (Underflow)!
+
+-----------------------------------------------------------------
+KET QUA MINH HOA: DUNG; tat ca loi du kien da duoc bat an toan.
+Ma thoat 0 chi danh cho demo bat loi dung nhu mong doi.
+=== RUNTESTS (26 CA KIEM THU) ===
+=================================================================
+CHAY KIEM THU TU DONG - DE TAI DT070
+Hang doi bang danh sach lien ket co dau va cuoi (LinkedQueue)
+Sinh vien: Pham Do Duy Thanh - MSSV: N24DCDT086 - Lop: D24CQDT01-N
+=================================================================
+Test Summary:                                          | Pass  Total  Time
+DT070 - Kiem thu toan dien Hang doi danh sach lien ket |  244    244  0.6s
+
+=================================================================
+KET QUA: TAT CA CAC CA KIEM THU DA PASS 100%!
+=================================================================
+=== VERIFY EXHAUSTIVE (ORACLE DOI CHUNG 20.000 THAO TAC) ===
+ORACLE: Bat dau kiem chung doc lap voi Mo hinh Hang doi Mang...
+EXHAUSTIVE_OK total_operations=20000 so_them=11009 so_lay=6005 so_xem=2986
+ORACLE=Vector FIFO Reference Model; Invariants, head, tail, and elements matched 100%.
+Tat ca 20.000 phep kiem chung ngau nhien deu hoan thanh xuat sac voi ma thoat 0.
+=== TEST CATALOG (BANG INPUT/EXPECTED/ACTUAL/PASS) ===
+CATALOG | id | input | expected | actual | result
+CATALOG | T01 | tao_hang_doi() | so_luong=0; dau=nothing; cuoi=nothing | so_luong=0; dau=nothing; cuoi=nothing | PASS
+CATALOG | T02 | them!(q, 10) | n=1; dau.val=10; cuoi.val=10; dau===cuoi | n=1; dau.val=10; cuoi.val=10; dau===cuoi | PASS
+CATALOG | T03 | them!(10, 20, 30) | n=3; xem_dau=10; xem_cuoi=30; FIFO=[10,20,30] | n=3; xem_dau=10; xem_cuoi=30; FIFO=[10, 20, 30] | PASS
+CATALOG | T04 | them 10,20,30; lay() | lay=10; con lai [20,30]; n=2 | lay=10; con lai [20, 30]; n=2 | PASS
+CATALOG | T05 | Hang moi; lay() | ArgumentError (Underflow) | ArgumentError (Underflow) | PASS
+CATALOG | T06 | them 1,2,3; lay het | lay lan luot 1,2,3; cuoi cung rong | lay=[1, 2, 3]; la_rong=true | PASS
+CATALOG | T07 | them 6; xem_dau 2 lan | xem1=6; xem2=6; n=1 khong doi | xem1=6; xem2=6; n=1 | PASS
+CATALOG | T08 | them 2; lay; them 3; lay | lay1=2; lay2=3; cuoi cung rong | lay1=2; lay2=3; la_rong=true | PASS
+CATALOG | T09 | them 4,4; lay 1 | lay=4; con lai [4]; n=1; dau===cuoi | lay=4; con lai [4]; n=1 | PASS
+CATALOG | T10 | them(4,7); lay(); them(9) | lay=4; FIFO=[7,9]; n=2 | lay=4; FIFO=[7, 9]; n=2 | PASS
+CATALOG | T11 | them(5); lay(); them(8) | lay=5; FIFO=[8]; dau=cuoi=Node(8) | lay=5; FIFO=[8]; dau=cuoi=8 | PASS
+CATALOG | T12 | xem_dau va xem_cuoi | dau=50; cuoi=60; n=2 | dau=50; cuoi=60; n=2 | PASS
+CATALOG | T13 | Kiem tra bat bien 50 buoc | cuoi.tiep===nothing; kiem_tra_bat_bien=true | cuoi.tiep=nothing; bat_bien=true | PASS
+CATALOG | T14 | Duyet dem_so_nut_duyet | dem_so_nut_duyet == q.so_luong | dem_truoc=10; dem_sau=8; khop 100% | PASS
+CATALOG | T15 | Quy mo lon n=200 | lay du 1..200; cuoi cung rong | da lay 200 phan tu; la_rong=true | PASS
+CATALOG | T16 | giai_bai(hon hop) | ket qua [2,3]; n=2 | mang=[2, 3]; n=2 | PASS
+CATALOG | T17 | Kieu String va Float64 | lay String='A'; lay Float64=1.5 | str=A; flt=1.5 | PASS
+CATALOG | V01 | lay!(hang_rong) | ArgumentError | ArgumentError | PASS
+CATALOG | V02 | xem_dau(hang_rong) | ArgumentError | ArgumentError | PASS
+CATALOG | V03 | xem_cuoi(hang_rong) | ArgumentError | ArgumentError | PASS
+CATALOG | V04 | kiem_tra_dau_vao(nothing) | ArgumentError | ArgumentError | PASS
+CATALOG | V05 | kiem_tra_dau_vao(chuoi) | ArgumentError | ArgumentError | PASS
+CATALOG | V06 | kiem_tra_dau_vao(lenh_sai) | ArgumentError | ArgumentError | PASS
+CATALOG | V07 | kiem_tra_dau_vao((:them,)) | ArgumentError | ArgumentError | PASS
+CATALOG | V08 | kiem_tra_dau_vao(x=1500) | ArgumentError | ArgumentError | PASS
+CATALOG | V09 | kiem_tra_dau_vao(x=3.14) | ArgumentError | ArgumentError | PASS
+CATALOG_OK functional_cases=17 helper_validator_cases=9 total_cases=26
+=== TRACE & SCALES (BANG TRACE VA KHAO SAT 10, 50, 200) ===
+=================================================================
+BANG TRACE CHI TIET VI DU 1: them(4); them(7); lay(); them(9)
+Buoc | Lenh | Con tro dau | Con tro cuoi | n | Chuoi lien ket
+-----------------------------------------------------------------
+  0  | Khoi tao | nothing     | nothing      | 0 | (rong)
+  1  | them(4)  | Node(4)     | Node(4)      | 1 | [4] -> nothing
+  2  | them(7)  | Node(4)     | Node(7)      | 2 | [4] -> [7] -> nothing
+  3  | lay()=4 | Node(7)     | Node(7)      | 1 | [7] -> nothing
+  4  | them(9)  | Node(7)     | Node(9)      | 2 | [7] -> [9] -> nothing
+Doi chieu ket qua: FIFO=[7, 9], n=2 -> KHOP 100% VOI PHIEU GIAO DE TAI.
+
+=================================================================
+BANG TRACE CHI TIET VI DU 2: them(5); lay(); them(8)
+Buoc | Lenh | Con tro dau | Con tro cuoi | n | Chuoi lien ket
+-----------------------------------------------------------------
+  0  | Khoi tao | nothing     | nothing      | 0 | (rong)
+  1  | them(5)  | Node(5)     | Node(5)      | 1 | [5] -> nothing
+  2  | lay()=5| nothing     | nothing      | 0 | (rong - cuoi duoc xoa)
+  3  | them(8)  | Node(8)     | Node(8)      | 1 | [8] -> nothing
+Doi chieu ket qua: FIFO=[8], dau=cuoi=Node(8) -> KHOP 100% VOI PHIEU GIAO DE TAI.
+
+=================================================================
+KHAO SAT SO PHEP TOAN LIEN KET THEO 3 QUY MO n = 10, 50, 200
+(Can cu theo muc Phan tich va nhan xet trong Phieu giao de tai DT070)
+-----------------------------------------------------------------
+Quy mo m | Co con tro cuoi (O(1)) | Khong co con tro cuoi (O(n)) | Ti le tiet kiem
+-----------------------------------------------------------------
+m = 10   | 30                     | 65                           | Giam 2.2 lan
+m = 50   | 150                    | 1325                         | Giam 8.8 lan
+m = 200  | 600                    | 20300                        | Giam 33.8 lan
+-----------------------------------------------------------------
+NHAN XET:
+  1. Khi co con tro cuoi, moi thao tac them chi mat dung 3 phep toan lien ket O(1),
+     tong chi phi cho m lenh them la 3*m = O(m).
+  2. Neu bo con tro cuoi, moi lan them phai duyet tu dau danh sach (k-1 phep doc),
+     tong chi phi tro thanh m*(m-1)/2 + 2*m = O(m^2).
+  3. O quy mo m = 200, viec giu con tro cuoi tiet kiem toi 33.8 lan so phep toan.
+=================================================================
+END_TO_END_OK: Tat ca demo, test suite, oracle va khao sat DT070 da hoan thanh xuat sac.
+
+[EXIT CODE: 0]
