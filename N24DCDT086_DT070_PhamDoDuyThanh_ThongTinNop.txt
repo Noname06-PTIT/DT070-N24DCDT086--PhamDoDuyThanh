@@ -1,0 +1,35 @@
+THONG TIN NOP DE TAI CA NHAN
+INT13185 - Nhom 03
+
+Ho va ten: Pham Do Duy Thanh
+MSSV: N24DCDT086
+Lop: D24CQDT01-N (INT13185 - Nhom 03)
+Ma de: DT070
+Ten de: Hang doi bang danh sach lien ket co dau va cuoi
+
+URL GitHub that: https://github.com/Noname06-PTIT/DT070-N24DCDT086--PhamDoDuyThanh
+SHA C day du cua ma/test/input dung chay va chup anh: 27e66d55a608e3abfbb34e6a5669785305406d4e
+Permalink tep thuat toan chinh tai C: https://github.com/Noname06-PTIT/DT070-N24DCDT086--PhamDoDuyThanh/blob/27e66d55a608e3abfbb34e6a5669785305406d4e/src/LinkedQueue.jl
+Permalink tep kiem thu tai C: https://github.com/Noname06-PTIT/DT070-N24DCDT086--PhamDoDuyThanh/blob/27e66d55a608e3abfbb34e6a5669785305406d4e/test/runtests.jl
+SHA S day du cua phien ban nop cuoi: 12af5371dc64500b8141280f7071074073739dfc
+Xac nhan ma/test/input khong doi giua C va S, hoac mo ta phan da chay lai: Ma nguon, test suite, cac script va du lieu dau vao khong thay doi giua C va S. Commit S chi bo sung 11 anh chup ket qua thuc thi va cac file log goc de minh chung.
+
+Ngon ngu va phien ban: Julia version 1.12.7 (chi su dung thu vien chuan Test va Printf)
+Lenh chay vi du 1: julia --startup-file=no demo.jl --ca=1
+Lenh chay vi du 2: julia --startup-file=no demo.jl --ca=2
+Lenh nhap du lieu moi: julia --startup-file=no demo.jl --nhap
+Lenh bien dich (neu dung C++): Khong ap dung (su dung Julia)
+Lenh chay bo kiem thu: julia --startup-file=no test/runtests.jl (hoac: powershell -ExecutionPolicy Bypass -File .\Run_all.ps1)
+So ca kiem doc lap: 26 ca (17 ca chuc nang T01..T17, 9 ca validator/ngoai le V01..V09)
+So phep kiem dat / tong so phep kiem: 244 / 244 (Dat 100%)
+
+Da co du 11 anh ca nhan trong bao cao va ZIP (Co/Chua): Co
+Anh A10 clone/chay C da co (Co/Chua): Co
+Da clone SHA S vao thu muc moi va chay lai (Co/Chua): Co
+Tom tat ket qua chay lai hai vi du va bo test tu S: Chay lai tren ban clone moi hoan toan trung khop, 8 ca demo xuat dung ket qua theo so do, 244/244 phep kiem tra deu PASS 100%, oracle 20.000 thao tac PASS.
+Giang vien truy cap duoc GitHub va permalink (Co/Chua): Co (Che do Public hoac da add email giang vien)
+
+Ten tep Word nop: N24DCDT086_DT070_PhamDoDuyThanh_BaoCao.docx
+Ten tep PDF nop: N24DCDT086_DT070_PhamDoDuyThanh_BaoCao.pdf
+Ten tep ZIP ma nguon nop: N24DCDT086_DT070_PhamDoDuyThanh_MaNguon.zip
+Ngay hoan tat: 01/11/2026

@@ -28,6 +28,12 @@ Copy-Item -Recurse -Force (Join-Path $sourceDir "test") (Join-Path $destFolder "
 Copy-Item -Force (Join-Path $sourceDir "demo.jl") (Join-Path $destFolder "demo.jl")
 Copy-Item -Force (Join-Path $sourceDir "README.md") (Join-Path $destFolder "README.md")
 Copy-Item -Force (Join-Path $sourceDir "Run_all.ps1") (Join-Path $destFolder "Run_all.ps1")
+if (Test-Path (Join-Path $sourceDir "interactive_demo.html")) {
+    Copy-Item -Force (Join-Path $sourceDir "interactive_demo.html") (Join-Path $destFolder "interactive_demo.html")
+}
+if (Test-Path (Join-Path $sourceDir "N24DCDT086_DT070_PhamDoDuyThanh_ThongTinNop.txt")) {
+    Copy-Item -Force (Join-Path $sourceDir "N24DCDT086_DT070_PhamDoDuyThanh_ThongTinNop.txt") (Join-Path $destFolder "N24DCDT086_DT070_PhamDoDuyThanh_ThongTinNop.txt")
+}
 if (Test-Path (Join-Path $sourceDir ".gitignore")) {
     Copy-Item -Force (Join-Path $sourceDir ".gitignore") (Join-Path $destFolder ".gitignore")
 }

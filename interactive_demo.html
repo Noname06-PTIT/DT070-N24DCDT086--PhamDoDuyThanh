@@ -1,0 +1,2026 @@
+<!DOCTYPE html>
+<html lang="vi" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DT070 — Mô Phỏng Trực Quan Hàng Đợi Danh Sách Liên Kết (Head & Tail)</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=Outfit:wght@600;700;800&display=swap" rel="stylesheet">
+    <style>
+        /* ==========================================================================
+           1. HỆ THỐNG BIẾN MÀU SẮC: CHẾ ĐỘ ĐÊM (MẶC ĐỊNH) & CHẾ ĐỘ NGÀY (LIGHT MODE)
+           ========================================================================== */
+        :root {
+            /* Chế độ Đêm (Dark Mode) */
+            --bg-base: #0b0f19;
+            --bg-surface: #111827;
+            --bg-card: #1f2937;
+            --bg-card-hover: #283548;
+            --bg-arena: rgba(11, 15, 25, 0.7);
+            --bg-console: #090d16;
+            --bg-header: rgba(17, 24, 39, 0.88);
+            --bg-code: #0d1322;
+
+            --border-color: #374151;
+            --border-subtle: rgba(255, 255, 255, 0.07);
+            --border-highlight: #6366f1;
+
+            --text-main: #f3f4f6;
+            --text-secondary: #e5e7eb;
+            --text-muted: #9ca3af;
+            --text-dim: #6b7280;
+
+            --primary: #6366f1;
+            --primary-hover: #4f46e5;
+            --primary-light: rgba(99, 102, 241, 0.16);
+            --primary-text: #c7d2fe;
+
+            --head-color: #10b981;
+            --head-bg: rgba(16, 185, 129, 0.15);
+            --head-tag-text: #042f2e;
+
+            --tail-color: #06b6d4;
+            --tail-bg: rgba(6, 182, 212, 0.15);
+            --tail-tag-text: #083344;
+
+            --danger-color: #f43f5e;
+            --danger-bg: rgba(244, 63, 94, 0.14);
+            --warning-color: #f59e0b;
+
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --radius-full: 9999px;
+
+            --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.25);
+            --shadow-md: 0 8px 20px -2px rgba(0, 0, 0, 0.35);
+            --shadow-lg: 0 16px 32px -4px rgba(0, 0, 0, 0.45);
+            --glow-head: 0 0 18px rgba(16, 185, 129, 0.35);
+            --glow-tail: 0 0 18px rgba(6, 182, 212, 0.35);
+        }
+
+        /* Chế độ Ngày (Light Mode) */
+        [data-theme="light"] {
+            --bg-base: #f1f5f9;
+            --bg-surface: #ffffff;
+            --bg-card: #f8fafc;
+            --bg-card-hover: #eef2ff;
+            --bg-arena: #f8fafc;
+            --bg-console: #1e293b; /* Giữ nền tối dịu cho Terminal để dễ đọc log */
+            --bg-header: rgba(255, 255, 255, 0.92);
+            --bg-code: #f1f5f9;
+
+            --border-color: #cbd5e1;
+            --border-subtle: #e2e8f0;
+            --border-highlight: #4f46e5;
+
+            --text-main: #0f172a;
+            --text-secondary: #1e293b;
+            --text-muted: #475569;
+            --text-dim: #64748b;
+
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --primary-light: rgba(79, 70, 229, 0.1);
+            --primary-text: #3730a3;
+
+            --head-color: #059669;
+            --head-bg: rgba(5, 150, 105, 0.12);
+            --head-tag-text: #ffffff;
+
+            --tail-color: #0891b2;
+            --tail-bg: rgba(8, 145, 178, 0.12);
+            --tail-tag-text: #ffffff;
+
+            --shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.08);
+            --shadow-md: 0 4px 12px rgba(15, 23, 42, 0.08);
+            --shadow-lg: 0 10px 24px rgba(15, 23, 42, 0.1);
+            --glow-head: 0 4px 12px rgba(5, 150, 105, 0.25);
+            --glow-tail: 0 4px 12px rgba(8, 145, 178, 0.25);
+        }
+
+        /* ==========================================================================
+           2. CẤU HÌNH CƠ BẢN & THANH TIÊU ĐỀ (HEADER)
+           ========================================================================== */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            min-height: 100vh;
+            line-height: 1.5;
+            overflow-x: hidden;
+            transition: background-color 0.25s ease, color 0.25s ease;
+        }
+
+        header {
+            background: var(--bg-header);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            padding: 0.8rem 1.5rem;
+            transition: background 0.25s ease, border-color 0.25s ease;
+        }
+
+        .header-container {
+            max-width: 1480px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .header-title-box {
+            display: flex;
+            align-items: center;
+            gap: 0.85rem;
+        }
+
+        .brand-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: var(--radius-md);
+            background: linear-gradient(135deg, #4f46e5, #06b6d4);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.35rem;
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.35);
+            flex-shrink: 0;
+        }
+
+        .header-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .header-subtitle {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 0.65rem;
+            flex-wrap: wrap;
+        }
+
+        .badge {
+            font-size: 0.74rem;
+            padding: 0.28rem 0.65rem;
+            border-radius: var(--radius-full);
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            border: 1px solid transparent;
+        }
+
+        .badge-student {
+            background: rgba(139, 92, 246, 0.14);
+            color: var(--primary);
+            border-color: rgba(139, 92, 246, 0.3);
+        }
+        [data-theme="dark"] .badge-student { color: #c4b5fd; }
+
+        .badge-o1 {
+            background: var(--head-bg);
+            color: var(--head-color);
+            border-color: rgba(16, 185, 129, 0.3);
+        }
+
+        /* Nút chuyển đổi Chế độ Ngày / Đêm */
+        .theme-toggle-btn {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 0.42rem 0.85rem;
+            border-radius: var(--radius-full);
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.45rem;
+            transition: all 0.2s ease;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .theme-toggle-btn:hover {
+            border-color: var(--primary);
+            background: var(--bg-card-hover);
+            transform: translateY(-1px);
+        }
+
+        /* ==========================================================================
+           3. BỐ CỤC CHÍNH (SIDEBAR ĐIỀU KHIỂN & KHÔNG GIAN MÔ PHỎNG)
+           ========================================================================== */
+        main {
+            max-width: 1480px;
+            margin: 1.25rem auto 2.5rem;
+            padding: 0 1.25rem;
+            display: grid;
+            grid-template-columns: 360px 1fr;
+            gap: 1.25rem;
+            align-items: start;
+        }
+
+        @media (max-width: 1080px) {
+            main {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 1.15rem;
+        }
+
+        .card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 1.15rem;
+            box-shadow: var(--shadow-md);
+            transition: background 0.25s ease, border-color 0.25s ease;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 0.85rem;
+            padding-bottom: 0.6rem;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .card-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.98rem;
+            font-weight: 700;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 0.45rem;
+        }
+
+        /* Danh sách 8 Ca Demo */
+        .preset-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 0.45rem;
+        }
+
+        .btn-preset {
+            width: 100%;
+            text-align: left;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 0.55rem 0.75rem;
+            border-radius: var(--radius-sm);
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.18s ease;
+            display: flex;
+            flex-direction: column;
+            gap: 0.15rem;
+        }
+
+        .btn-preset:hover {
+            background: var(--bg-card-hover);
+            border-color: var(--primary);
+        }
+
+        .btn-preset.active {
+            background: var(--primary-light);
+            border-color: var(--primary);
+            color: var(--primary-text);
+            box-shadow: inset 3px 0 0 var(--primary);
+        }
+
+        .preset-name {
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .preset-ops {
+            font-family: 'Fira Code', monospace;
+            font-size: 0.71rem;
+            color: var(--text-muted);
+        }
+
+        /* Điều khiển nhập tay */
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.65rem;
+        }
+
+        .input-row {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .input-field {
+            flex: 1;
+            background: var(--bg-base);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            padding: 0.55rem 0.75rem;
+            color: var(--text-main);
+            font-family: 'Fira Code', monospace;
+            font-size: 0.88rem;
+            outline: none;
+        }
+
+        .input-field:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #4f46e5, #6366f1);
+            color: #ffffff;
+            border: none;
+            padding: 0.55rem 0.95rem;
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+            font-size: 0.82rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        .btn-primary:hover {
+            filter: brightness(1.08);
+            transform: translateY(-1px);
+        }
+
+        .btn-actions-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.45rem;
+        }
+
+        .btn-secondary {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 0.5rem 0.65rem;
+            border-radius: var(--radius-sm);
+            font-size: 0.79rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.18s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.35rem;
+        }
+
+        .btn-secondary:hover {
+            background: var(--bg-card-hover);
+            border-color: var(--primary);
+        }
+
+        .btn-danger {
+            background: var(--danger-bg);
+            color: var(--danger-color);
+            border-color: rgba(244, 63, 94, 0.3);
+        }
+
+        .batch-box {
+            display: flex;
+            flex-direction: column;
+            gap: 0.45rem;
+            margin-top: 0.35rem;
+            padding-top: 0.65rem;
+            border-top: 1px dashed var(--border-color);
+        }
+
+        .batch-input {
+            width: 100%;
+            height: 54px;
+            background: var(--bg-base);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            padding: 0.45rem 0.6rem;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.74rem;
+            color: var(--text-main);
+            resize: none;
+            outline: none;
+        }
+
+        /* ==========================================================================
+           4. KHÔNG GIAN MÔ PHỎNG TRỰC QUAN & GIẢI THÍCH THUẬT TOÁN
+           ========================================================================== */
+        .workspace {
+            display: flex;
+            flex-direction: column;
+            gap: 1.1rem;
+        }
+
+        /* 4 Thẻ chỉ số trạng thái (Metrics) */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0.85rem;
+        }
+
+        @media (max-width: 768px) {
+            .metrics-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .metric-card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 0.85rem 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.2rem;
+            position: relative;
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .metric-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+        }
+
+        .metric-size::before { background: var(--primary); }
+        .metric-head::before { background: var(--head-color); }
+        .metric-tail::before { background: var(--tail-color); }
+        .metric-invariant::before { background: #10b981; }
+
+        .metric-label {
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            font-weight: 700;
+        }
+
+        .metric-val {
+            font-family: 'Fira Code', monospace;
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .metric-desc {
+            font-size: 0.71rem;
+            color: var(--text-dim);
+        }
+
+        /* BẢNG GIẢI THÍCH THUẬT TOÁN TRỰC TIẾP (STEP EXPLAINER & JULIA CODE) */
+        .explainer-panel {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 1.1rem 1.25rem;
+            display: grid;
+            grid-template-columns: 1.15fr 1fr;
+            gap: 1.25rem;
+            box-shadow: var(--shadow-md);
+        }
+
+        @media (max-width: 900px) {
+            .explainer-panel {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .explainer-left {
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+        }
+
+        .explainer-header {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            flex-wrap: wrap;
+        }
+
+        .op-badge {
+            font-family: 'Fira Code', monospace;
+            font-size: 0.76rem;
+            font-weight: 700;
+            padding: 0.22rem 0.65rem;
+            border-radius: var(--radius-sm);
+            background: var(--primary-light);
+            color: var(--primary);
+            border: 1px solid var(--primary);
+        }
+
+        .op-title {
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: var(--text-main);
+        }
+
+        .micro-steps-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.38rem;
+            font-size: 0.82rem;
+            color: var(--text-secondary);
+            padding-left: 0.2rem;
+        }
+
+        .micro-steps-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.5rem;
+        }
+
+        .step-num {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--primary-light);
+            color: var(--primary);
+            font-size: 0.7rem;
+            font-weight: 700;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .code-box {
+            background: var(--bg-code);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 0.75rem 0.95rem;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.76rem;
+            line-height: 1.55;
+            color: var(--text-secondary);
+            overflow-x: auto;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .code-box-title {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            margin-bottom: 0.4rem;
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border-subtle);
+            padding-bottom: 0.25rem;
+        }
+
+        .code-line {
+            padding: 0.1rem 0.4rem;
+            border-radius: 4px;
+            white-space: pre;
+        }
+
+        .code-line.active-line {
+            background: rgba(99, 102, 241, 0.22);
+            border-left: 3px solid var(--primary);
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        /* KHUNG SƠ ĐỒ NÚT & CON TRỎ (VISUAL ARENA) */
+        .visual-arena {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 1.25rem;
+            display: flex;
+            flex-direction: column;
+            box-shadow: var(--shadow-md);
+        }
+
+        .arena-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+        }
+
+        .arena-legend {
+            display: flex;
+            align-items: center;
+            gap: 1.15rem;
+            font-size: 0.78rem;
+            flex-wrap: wrap;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .legend-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        .legend-dot.head { background: var(--head-color); box-shadow: var(--glow-head); }
+        .legend-dot.tail { background: var(--tail-color); box-shadow: var(--glow-tail); }
+
+        .queue-display-container {
+            display: flex;
+            align-items: center;
+            overflow-x: auto;
+            padding: 2.8rem 1.25rem;
+            min-height: 175px;
+            border-radius: var(--radius-md);
+            background: var(--bg-arena);
+            border: 1px dashed var(--border-color);
+        }
+
+        .queue-nodes-list {
+            display: flex;
+            align-items: center;
+            gap: 0.85rem;
+            margin: 0 auto;
+            padding: 0 0.5rem;
+        }
+
+        .empty-placeholder {
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 0.4rem;
+            color: var(--text-muted);
+            font-size: 0.88rem;
+            text-align: center;
+        }
+
+        /* Cấu trúc từng Node trong danh sách liên kết */
+        .node-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+            animation: nodeEntrance 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        @keyframes nodeEntrance {
+            0% { opacity: 0; transform: scale(0.75) translateY(12px); }
+            100% { opacity: 1; transform: scale(1) translateY(0); }
+        }
+
+        .node-box {
+            display: flex;
+            flex-direction: column;
+            background: var(--bg-card);
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+            transition: all 0.25s ease;
+            min-width: 118px;
+        }
+
+        .node-index-bar {
+            font-family: 'Fira Code', monospace;
+            font-size: 0.65rem;
+            padding: 0.15rem 0.5rem;
+            background: var(--border-subtle);
+            color: var(--text-muted);
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .node-cells {
+            display: flex;
+        }
+
+        .node-val {
+            flex: 1;
+            padding: 0.6rem 0.85rem;
+            font-family: 'Fira Code', monospace;
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--text-main);
+            text-align: center;
+            border-right: 1px solid var(--border-color);
+        }
+
+        .node-next {
+            padding: 0.6rem 0.55rem;
+            font-size: 0.72rem;
+            font-family: 'Fira Code', monospace;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.06);
+            min-width: 46px;
+        }
+
+        /* Nhãn con trỏ dau (Head) và cuoi (Tail) */
+        .pointer-tag {
+            position: absolute;
+            left: 38%;
+            transform: translateX(-50%);
+            padding: 0.18rem 0.55rem;
+            border-radius: var(--radius-sm);
+            font-size: 0.68rem;
+            font-weight: 700;
+            letter-spacing: 0.03em;
+            white-space: nowrap;
+            z-index: 10;
+        }
+
+        .pointer-tag.head {
+            top: -32px;
+            background: var(--head-color);
+            color: var(--head-tag-text);
+            box-shadow: var(--glow-head);
+        }
+
+        .pointer-tag.head::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-width: 5px 5px 0 5px;
+            border-style: solid;
+            border-color: var(--head-color) transparent transparent transparent;
+        }
+
+        .pointer-tag.tail {
+            bottom: -32px;
+            background: var(--tail-color);
+            color: var(--tail-tag-text);
+            box-shadow: var(--glow-tail);
+        }
+
+        .pointer-tag.tail::after {
+            content: '';
+            position: absolute;
+            top: -5px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-width: 0 5px 5px 5px;
+            border-style: solid;
+            border-color: transparent transparent var(--tail-color) transparent;
+        }
+
+        .node-wrapper.is-head .node-box { border-color: var(--head-color); }
+        .node-wrapper.is-tail .node-box { border-color: var(--tail-color); }
+        .node-wrapper.is-head.is-tail .node-box {
+            border-color: var(--primary);
+            box-shadow: 0 0 15px rgba(99, 102, 241, 0.35);
+        }
+
+        .node-arrow {
+            color: var(--primary);
+            font-size: 1.15rem;
+            font-weight: 700;
+            margin: 0 0.15rem 0 0.45rem;
+            user-select: none;
+        }
+
+        .node-arrow-tail-null {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            color: var(--text-dim);
+            font-family: 'Fira Code', monospace;
+            font-size: 0.75rem;
+            margin-left: 0.45rem;
+        }
+
+        .highlight-enqueue .node-box {
+            animation: highlightGlow 0.75s ease;
+        }
+        @keyframes highlightGlow {
+            0% { transform: scale(1.08); box-shadow: 0 0 22px rgba(99, 102, 241, 0.75); }
+            100% { transform: scale(1); }
+        }
+
+        .highlight-peek .node-box {
+            animation: peekGlow 0.75s ease;
+        }
+        @keyframes peekGlow {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.08); box-shadow: 0 0 22px rgba(245, 158, 11, 0.8); }
+        }
+
+        /* Thanh điều khiển chạy từng bước (Step Runner) */
+        .runner-controls {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            background: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 0.65rem 1rem;
+            font-size: 0.82rem;
+        }
+
+        .runner-buttons {
+            display: flex;
+            align-items: center;
+            gap: 0.45rem;
+            flex-wrap: wrap;
+        }
+
+        .step-progress-badge {
+            font-family: 'Fira Code', monospace;
+            font-size: 0.75rem;
+            padding: 0.2rem 0.6rem;
+            border-radius: var(--radius-sm);
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+        }
+
+        .btn-mini {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 0.32rem 0.65rem;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .btn-mini:hover {
+            border-color: var(--primary);
+            background: var(--bg-card-hover);
+        }
+
+        /* Bảng kiểm tra bất biến */
+        .invariant-banner {
+            padding: 0.6rem 1rem;
+            border-radius: var(--radius-md);
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            background: var(--head-bg);
+            border: 1px solid rgba(16, 185, 129, 0.35);
+            color: var(--head-color);
+            font-weight: 600;
+        }
+
+        .invariant-banner.invalid {
+            background: var(--danger-bg);
+            border-color: rgba(244, 63, 94, 0.4);
+            color: var(--danger-color);
+        }
+
+        /* Terminal Console Log */
+        .console-panel {
+            background: var(--bg-console);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            box-shadow: var(--shadow-md);
+        }
+
+        .console-header {
+            background: #111827;
+            padding: 0.6rem 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid #374151;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .console-tabs {
+            display: flex;
+            gap: 0.45rem;
+        }
+
+        .console-tab {
+            background: transparent;
+            border: none;
+            color: #9ca3af;
+            font-size: 0.78rem;
+            font-weight: 600;
+            padding: 0.3rem 0.75rem;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+        }
+
+        .console-tab.active {
+            background: #1f2937;
+            color: #ffffff;
+        }
+
+        .console-body {
+            height: 200px;
+            overflow-y: auto;
+            padding: 0.8rem 1rem;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.76rem;
+            line-height: 1.6;
+            color: #e5e7eb;
+        }
+
+        .log-entry {
+            margin-bottom: 0.3rem;
+            display: flex;
+            gap: 0.65rem;
+        }
+
+        .log-time { color: #6b7280; user-select: none; }
+        .log-msg.info { color: #93c5fd; }
+        .log-msg.success { color: #86efac; }
+        .log-msg.warning { color: #fde047; }
+        .log-msg.error { color: #fda4af; }
+        .log-msg.trace { color: #c4b5fd; }
+    </style>
+</head>
+<body>
+
+    <!-- ==========================================================================
+         THANH TIÊU ĐỀ (HEADER) KÈM NÚT CHUYỂN ĐỔI CHẾ ĐỘ NGÀY / ĐÊM
+         ========================================================================== -->
+    <header>
+        <div class="header-container">
+            <div class="header-title-box">
+                <div class="brand-icon">⚡</div>
+                <div>
+                    <h1 class="header-title">DT070 — Hàng Đợi Danh Sách Liên Kết (Đầu & Cuối)</h1>
+                    <div class="header-subtitle">
+                        <span>Học phần: CTDL & GT (INT13185 - Nhóm 03)</span>
+                        <span>•</span>
+                        <span>Giáo trình INT1306 mục 5.2.3.3 & 5.4</span>
+                    </div>
+                </div>
+            </div>
+            <div class="header-right">
+                <span class="badge badge-student">👤 Phạm Đỗ Duy Thành - N24DCDT086</span>
+                <span class="badge badge-o1">⚡ Thêm / Lấy / Xem: O(1)</span>
+                <button class="theme-toggle-btn" id="themeToggleBtn" onclick="toggleTheme()" title="Chuyển đổi giao diện Sáng / Tối">
+                    <span id="themeIcon">☀️</span>
+                    <span id="themeLabel">Chế độ Ngày</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- ==========================================================================
+         NỘI DUNG CHÍNH
+         ========================================================================== -->
+    <main>
+        <!-- CỘT TRÁI: CHỌN DEMO & NHẬP LỆNH TÙY CHỈNH -->
+        <div class="sidebar">
+            <!-- 8 Ca Demo Chuẩn -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">🎯 Chọn Kịch Bản Mô Phỏng</span>
+                    <span style="font-size: 0.74rem; color: var(--text-dim);">8 ca A01–A08</span>
+                </div>
+                <div class="preset-grid">
+                    <button class="btn-preset active" onclick="loadPreset(1)">
+                        <span class="preset-name">
+                            <span>Demo 1: Thêm/Lấy FIFO & Nối đuôi O(1)</span>
+                            <span class="badge" style="background:#1e3a8a; color:#93c5fd;">A01</span>
+                        </span>
+                        <span class="preset-ops">them(4) → them(7) → lay() → them(9)</span>
+                    </button>
+                    <button class="btn-preset" onclick="loadPreset(2)">
+                        <span class="preset-name">
+                            <span>Demo 2: Lấy cạn về rỗng & Khởi tạo lại</span>
+                            <span class="badge" style="background:#1e3a8a; color:#93c5fd;">A02</span>
+                        </span>
+                        <span class="preset-ops">them(5) → lay() → them(8) (Xóa sạch đuôi)</span>
+                    </button>
+                    <button class="btn-preset" onclick="loadPreset(3)">
+                        <span class="preset-name">
+                            <span>Demo 3: Buffer tác vụ đa chu kỳ</span>
+                            <span class="badge" style="background:#4c1d95; color:#c4b5fd;">A03</span>
+                        </span>
+                        <span class="preset-ops">Nạp 100..300, xen kẽ lấy & nạp 400..500</span>
+                    </button>
+                    <button class="btn-preset" onclick="loadPreset(4)">
+                        <span class="preset-name">
+                            <span>Demo 4: Số âm, số 0 & cận biên</span>
+                            <span class="badge" style="background:#4c1d95; color:#c4b5fd;">A04</span>
+                        </span>
+                        <span class="preset-ops">them(-500), them(0), them(1000), them(-999)</span>
+                    </button>
+                    <button class="btn-preset" onclick="loadPreset(5)">
+                        <span class="preset-name">
+                            <span>Demo 5: Hàng đợi rỗng & Bắt lỗi Underflow</span>
+                            <span class="badge" style="background:#701a75; color:#f0abfc;">A05</span>
+                        </span>
+                        <span class="preset-ops">Khởi tạo n=0, bắt lỗi Underflow khi lấy/xem</span>
+                    </button>
+                    <button class="btn-preset" onclick="loadPreset(6)">
+                        <span class="preset-name">
+                            <span>Demo 6: Các phần tử trùng giá trị</span>
+                            <span class="badge" style="background:#701a75; color:#f0abfc;">A06</span>
+                        </span>
+                        <span class="preset-ops">them(4), them(4), lay 1 phần tử (dau===cuoi)</span>
+                    </button>
+                    <button class="btn-preset" onclick="loadPreset(7)">
+                        <span class="preset-name">
+                            <span>Demo 7: Xem đầu liên tiếp bảo toàn kích thước</span>
+                            <span class="badge" style="background:#701a75; color:#f0abfc;">A07</span>
+                        </span>
+                        <span class="preset-ops">them(6) → xem_dau() 2 lần mà n=1 không đổi</span>
+                    </button>
+                    <button class="btn-preset" onclick="loadPreset(8)">
+                        <span class="preset-name">
+                            <span>Demo 8: Chặn dữ liệu ngoài miền [-1000, 1000]</span>
+                            <span class="badge" style="background:#881337; color:#fda4af;">A08</span>
+                        </span>
+                        <span class="preset-ops">Từ chối 1500 & -1200 (ngoài [-1000, 1000])</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Điều Khiển Tùy Chỉnh -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">🛠️ Thao Tác Trực Tiếp</span>
+                    <span style="font-size: 0.74rem; color: var(--text-dim);">Miền [-1000..1000]</span>
+                </div>
+                <div class="control-group">
+                    <div class="input-row">
+                        <input type="number" id="customInput" class="input-field" placeholder="Nhập x (-1000..1000)" value="25">
+                        <button class="btn-primary" onclick="handleCustomEnqueue()">+ Thêm (Enqueue)</button>
+                    </div>
+
+                    <div class="btn-actions-grid">
+                        <button class="btn-secondary" onclick="handleDequeue()">➖ Lấy (Dequeue)</button>
+                        <button class="btn-secondary" onclick="handlePeekFront()">👁️ Xem Đầu</button>
+                        <button class="btn-secondary" onclick="handlePeekRear()">👁️ Xem Cuối</button>
+                        <button class="btn-secondary" onclick="handleRandomEnqueue()">🎲 Ngẫu Nhiên</button>
+                    </div>
+
+                    <button class="btn-secondary btn-danger" onclick="handleClearQueue()">
+                        🗑️ Xóa Rỗng Hàng Đợi (Clear)
+                    </button>
+
+                    <div class="batch-box">
+                        <span style="font-size: 0.74rem; color: var(--text-muted); font-weight: 600;">Chạy chuỗi lệnh nhanh (Script):</span>
+                        <textarea id="batchText" class="batch-input" placeholder="them(10), them(20), lay(), them(30)"></textarea>
+                        <button class="btn-secondary" onclick="executeBatchScript()">▶️ Thực Thi Chuỗi Lệnh</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CỘT PHẢI: TRỰC QUAN HÓA, GIẢI THÍCH THUẬT TOÁN & TERMINAL LOG -->
+        <div class="workspace">
+            <!-- 4 Thẻ Chỉ Số Quan Trọng -->
+            <div class="metrics-grid">
+                <div class="metric-card metric-size">
+                    <span class="metric-label">Số lượng (so_luong)</span>
+                    <span class="metric-val" id="metricSize">0</span>
+                    <span class="metric-desc">Cập nhật trực tiếp O(1)</span>
+                </div>
+                <div class="metric-card metric-head">
+                    <span class="metric-label">Con trỏ đầu (dau)</span>
+                    <span class="metric-val" id="metricHead" style="color: var(--head-color);">nothing</span>
+                    <span class="metric-desc">Nơi lấy phần tử ra (FIFO)</span>
+                </div>
+                <div class="metric-card metric-tail">
+                    <span class="metric-label">Con trỏ cuối (cuoi)</span>
+                    <span class="metric-val" id="metricTail" style="color: var(--tail-color);">nothing</span>
+                    <span class="metric-desc">Nơi nối nút mới vào O(1)</span>
+                </div>
+                <div class="metric-card metric-invariant">
+                    <span class="metric-label">Bất biến cấu trúc</span>
+                    <span class="metric-val" id="metricInvariant" style="color: var(--head-color);">HỢP LỆ</span>
+                    <span class="metric-desc">kiem_tra_bat_bien(q)</span>
+                </div>
+            </div>
+
+            <!-- BẢNG GIẢI THÍCH TỪNG BƯỚC THUẬT TOÁN & MÃ JULIA TRỰC TIẾP -->
+            <div class="explainer-panel">
+                <div class="explainer-left">
+                    <div class="explainer-header">
+                        <span class="op-badge" id="explainBadge">KHỞI TẠO</span>
+                        <span class="op-title" id="explainTitle">Đang chờ thao tác...</span>
+                    </div>
+                    <ul class="micro-steps-list" id="explainSteps">
+                        <!-- Các bước giải thích chi tiết được cập nhật tự động bằng JS -->
+                    </ul>
+                </div>
+                <div class="code-box">
+                    <div class="code-box-title">
+                        <span>📄 Mã nguồn thực thi (src/LinkedQueue.jl)</span>
+                        <span>Độ phức tạp: O(1)</span>
+                    </div>
+                    <div id="juliaCodeSnippet">
+                        <!-- Mã nguồn Julia tương ứng được tô sáng tại đây -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- KHUNG VẼ SƠ ĐỒ NÚT & CON TRỎ -->
+            <div class="visual-arena">
+                <div class="arena-top">
+                    <div class="card-title">
+                        <span>🔍 Sơ Đồ Liên Kết Nút Trong Bộ Nhớ (Head & Tail Pointers)</span>
+                    </div>
+                    <div class="arena-legend">
+                        <div class="legend-item">
+                            <span class="legend-dot head"></span>
+                            <span><b>dau</b>: Đầu hàng (Lấy ra)</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-dot tail"></span>
+                            <span><b>cuoi</b>: Cuối hàng (Thêm vào)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="queue-display-container" id="queueContainer">
+                    <div class="queue-nodes-list" id="nodesList">
+                        <!-- Các Node được vẽ tự động tại đây -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bất biến bảo toàn -->
+            <div class="invariant-banner" id="invariantBanner">
+                <span id="invariantText">✅ Bất biến bảo toàn: n=0 ⇔ dau===nothing && cuoi===nothing.</span>
+                <span style="font-family: 'Fira Code', monospace; font-size: 0.74rem;">DT070-Invariant: PASS</span>
+            </div>
+
+            <!-- Thanh Điều Khiển Chạy Từng Bước Demo -->
+            <div class="runner-controls">
+                <div class="runner-buttons">
+                    <span style="font-weight: 700;">Điều khiển Demo:</span>
+                    <button class="btn-mini" onclick="stepBackward()">◀ Bước trước</button>
+                    <button class="btn-mini" onclick="stepForward()">Bước tiếp ▶</button>
+                    <button class="btn-mini" onclick="toggleAutoRun()" id="btnAutoPlay">⏯️ Tự động chạy</button>
+                    <button class="btn-mini" onclick="resetCurrentPreset()">🔄 Chạy lại</button>
+                    <span class="step-progress-badge" id="stepProgressBadge">Bước 1 / 5</span>
+                </div>
+                <div style="display:flex; align-items:center; gap:0.5rem; color:var(--text-muted);">
+                    <span>Tốc độ:</span>
+                    <input type="range" id="speedSlider" min="300" max="2000" step="100" value="1000" style="cursor: pointer;">
+                    <span id="speedVal" style="font-family:'Fira Code', monospace; font-size: 0.75rem;">1.0s</span>
+                </div>
+            </div>
+
+            <!-- Terminal Console & Bảng Trace -->
+            <div class="console-panel">
+                <div class="console-header">
+                    <div class="console-tabs">
+                        <button class="console-tab active" onclick="switchTab('terminal')">💻 Terminal Log (Chuẩn Julia demo.jl)</button>
+                        <button class="console-tab" onclick="switchTab('trace')">📋 Bảng Trace Thao Tác</button>
+                    </div>
+                    <div style="display:flex; gap:0.45rem;">
+                        <button class="btn-mini" style="background:#1f2937; color:#e5e7eb; border-color:#374151;" onclick="copyConsoleLog()" id="btnCopyLog">📋 Sao chép Log</button>
+                        <button class="btn-mini" style="background:#1f2937; color:#e5e7eb; border-color:#374151;" onclick="clearConsoleLog()">🧹 Xóa Log</button>
+                    </div>
+                </div>
+                <div class="console-body" id="consoleBody"></div>
+            </div>
+        </div>
+    </main>
+
+    <!-- ==========================================================================
+         MÃ NGUỒN JAVASCRIPT (ĐƯỢC CHÚ THÍCH RÕ RÀNG THEO TỪNG PHẦN)
+         ========================================================================== -->
+    <script>
+        /* --------------------------------------------------------------------------
+           PHẦN 1: QUẢN LÝ GIAO DIỆN NGÀY / ĐÊM (LIGHT / DARK THEME)
+           -------------------------------------------------------------------------- */
+        function initTheme() {
+            const savedTheme = localStorage.getItem('dt070_theme') || 'dark';
+            applyTheme(savedTheme);
+        }
+
+        function toggleTheme() {
+            const current = document.documentElement.getAttribute('data-theme') || 'dark';
+            const next = current === 'dark' ? 'light' : 'dark';
+            applyTheme(next);
+            localStorage.setItem('dt070_theme', next);
+        }
+
+        function applyTheme(theme) {
+            document.documentElement.setAttribute('data-theme', theme);
+            const icon = document.getElementById('themeIcon');
+            const label = document.getElementById('themeLabel');
+            if (theme === 'light') {
+                icon.textContent = '🌙';
+                label.textContent = 'Chế độ Đêm';
+            } else {
+                icon.textContent = '☀️';
+                label.textContent = 'Chế độ Ngày';
+            }
+        }
+
+        /* --------------------------------------------------------------------------
+           PHẦN 2: CẤU TRÚC DỮ LIỆU HÀNG ĐỢI LIÊN KẾT (ĐỒNG BỘ VỚI LinkedQueue.jl)
+           -------------------------------------------------------------------------- */
+        class Node {
+            constructor(gia_tri) {
+                this.gia_tri = gia_tri;
+                this.tiep = null;
+            }
+        }
+
+        class LinkedQueue {
+            constructor() {
+                this.dau = null;
+                this.cuoi = null;
+                this.so_luong = 0;
+            }
+
+            la_rong() {
+                return this.so_luong === 0;
+            }
+
+            kich_thuoc() {
+                return this.so_luong;
+            }
+
+            // Thêm phần tử vào cuối hàng đợi O(1)
+            them(x) {
+                if (typeof x !== 'number' || isNaN(x)) {
+                    throw new Error("Lỗi: Dữ liệu nhập vào phải là số nguyên!");
+                }
+                if (x < -1000 || x > 1000) {
+                    throw new Error(`Lỗi: Giá trị ${x} nằm ngoài phạm vi [-1000, 1000]!`);
+                }
+
+                const wasEmpty = this.la_rong();
+                const nut_moi = new Node(x);
+
+                if (wasEmpty) {
+                    this.dau = nut_moi;
+                    this.cuoi = nut_moi;
+                } else {
+                    this.cuoi.tiep = nut_moi;
+                    this.cuoi = nut_moi;
+                }
+                this.so_luong++;
+                this.kiem_tra_bat_bien();
+                return { nut_moi, wasEmpty };
+            }
+
+            // Lấy phần tử ở đầu hàng đợi O(1)
+            lay() {
+                if (this.la_rong()) {
+                    throw new Error("Lỗi: Hàng đợi rỗng, không thể lấy phần tử (Underflow)!");
+                }
+                const gia_tri_dau = this.dau.gia_tri;
+                this.dau = this.dau.tiep;
+                this.so_luong--;
+
+                const becameEmpty = (this.dau === null);
+                if (becameEmpty) {
+                    this.cuoi = null; // Xóa sạch con trỏ cuối để tránh con trỏ rác
+                }
+                this.kiem_tra_bat_bien();
+                return { gia_tri_dau, becameEmpty };
+            }
+
+            xem_dau() {
+                if (this.la_rong()) {
+                    throw new Error("Lỗi: Hàng đợi rỗng, không thể xem đầu!");
+                }
+                return this.dau.gia_tri;
+            }
+
+            xem_cuoi() {
+                if (this.la_rong()) {
+                    throw new Error("Lỗi: Hàng đợi rỗng, không thể xem cuối!");
+                }
+                return this.cuoi.gia_tri;
+            }
+
+            kiem_tra_bat_bien() {
+                if (this.so_luong === 0) {
+                    return this.dau === null && this.cuoi === null;
+                }
+                if (this.dau === null || this.cuoi === null) return false;
+                if (this.cuoi.tiep !== null) return false;
+
+                let dem = 0;
+                let curr = this.dau;
+                let last = null;
+                while (curr !== null) {
+                    dem++;
+                    last = curr;
+                    curr = curr.tiep;
+                    if (dem > this.so_luong + 1) return false;
+                }
+                return dem === this.so_luong && last === this.cuoi;
+            }
+
+            to_array() {
+                const res = [];
+                let curr = this.dau;
+                while (curr !== null) {
+                    res.push(curr.gia_tri);
+                    curr = curr.tiep;
+                }
+                return res;
+            }
+        }
+
+        /* --------------------------------------------------------------------------
+           PHẦN 3: BỘ GIẢI THÍCH THUẬT TOÁN & HIỂN THỊ MÃ JULIA TRỰC TIẾP
+           Giúp người xem hiểu rõ từng thao tác con trỏ đang diễn ra như thế nào.
+           -------------------------------------------------------------------------- */
+        function updateExplainer(type, payload = {}) {
+            const badge = document.getElementById('explainBadge');
+            const title = document.getElementById('explainTitle');
+            const stepsList = document.getElementById('explainSteps');
+            const codeBox = document.getElementById('juliaCodeSnippet');
+
+            let steps = [];
+            let codeLines = [];
+
+            if (type === 'init') {
+                badge.textContent = 'KHỞI TẠO O(1)';
+                title.textContent = 'Khởi tạo hàng đợi rỗng tao_hang_doi(Int)';
+                steps = [
+                    'Gán con trỏ đầu: <code>q.dau = nothing</code>.',
+                    'Gán con trỏ cuối: <code>q.cuoi = nothing</code>.',
+                    'Đặt bộ đếm số phần tử: <code>q.so_luong = 0</code>.'
+                ];
+                codeLines = [
+                    { text: 'function tao_hang_doi(::Type{T}=Int)', active: false },
+                    { text: '    return HangDoiLienKet{T}(nothing, nothing, 0)', active: true },
+                    { text: 'end', active: false }
+                ];
+            } else if (type === 'enqueue_empty') {
+                badge.textContent = `THÊM VÀO RỖNG: them!(q, ${payload.x})`;
+                title.textContent = `Thêm phần tử đầu tiên (${payload.x}) vào hàng đợi đang rỗng`;
+                steps = [
+                    `Cấp phát nút mới độc lập: <code>nut = Nut(${payload.x}, nothing)</code>.`,
+                    `Vì hàng đang rỗng (<code>n = 0</code>), cả <code>q.dau</code> và <code>q.cuoi</code> cùng trỏ vào nút mới này.`,
+                    `Tăng <code>q.so_luong</code> từ 0 lên 1 (Độ phức tạp O(1)).`
+                ];
+                codeLines = [
+                    { text: `nut_moi = Nut(x, nothing) # x = ${payload.x}`, active: true },
+                    { text: 'if la_rong(q)', active: true },
+                    { text: '    q.dau = q.cuoi = nut_moi', active: true },
+                    { text: 'else ... end', active: false },
+                    { text: 'q.so_luong += 1', active: true }
+                ];
+            } else if (type === 'enqueue_normal') {
+                badge.textContent = `THÊM VÀO CUỐI: them!(q, ${payload.x})`;
+                title.textContent = `Nối phần tử ${payload.x} trực tiếp vào sau nút cuối hiện tại`;
+                steps = [
+                    `Cấp phát nút mới: <code>nut = Nut(${payload.x}, nothing)</code>.`,
+                    `Nối trực tiếp sau nút cuối hiện tại: <code>q.cuoi.tiep = nut</code> (không cần duyệt từ đầu!).`,
+                    `Dời con trỏ cuối sang nút mới: <code>q.cuoi = nut</code> và tăng <code>q.so_luong</code> lên ${queue.kich_thuoc()}.`
+                ];
+                codeLines = [
+                    { text: `nut_moi = Nut(x, nothing) # x = ${payload.x}`, active: true },
+                    { text: 'if la_rong(q) ... else', active: false },
+                    { text: '    q.cuoi.tiep = nut_moi  # Nối đuôi O(1)', active: true },
+                    { text: '    q.cuoi = nut_moi       # Cập nhật cuoi', active: true },
+                    { text: 'end; q.so_luong += 1', active: true }
+                ];
+            } else if (type === 'dequeue_normal') {
+                badge.textContent = `LẤY ĐẦU HÀNG: lay!(q) -> ${payload.val}`;
+                title.textContent = `Lấy phần tử ${payload.val} ở đầu hàng đợi (Chuẩn FIFO)`;
+                steps = [
+                    `Đọc giá trị tại nút đầu: <code>gia_tri = q.dau.gia_tri</code> (${payload.val}).`,
+                    `Dời con trỏ đầu sang nút kế tiếp: <code>q.dau = q.dau.tiep</code>.`,
+                    `Giảm <code>q.so_luong</code> còn ${queue.kich_thuoc()}. Hàng vẫn còn phần tử nên giữ nguyên <code>q.cuoi</code>.`
+                ];
+                codeLines = [
+                    { text: `val = q.dau.gia_tri        # val = ${payload.val}`, active: true },
+                    { text: 'q.dau = q.dau.tiep         # Dời đầu sang nút kế', active: true },
+                    { text: 'q.so_luong -= 1', active: true },
+                    { text: 'if q.dau === nothing; q.cuoi = nothing; end', active: false }
+                ];
+            } else if (type === 'dequeue_to_empty') {
+                badge.textContent = `LẤY VỀ RỖNG: lay!(q) -> ${payload.val}`;
+                title.textContent = `Lấy phần tử cuối cùng (${payload.val}) — Hàng đợi trở về rỗng`;
+                steps = [
+                    `Đọc giá trị nút duy nhất: <code>val = ${payload.val}</code> và dời <code>q.dau = q.dau.tiep</code> (trở thành <code>nothing</code>).`,
+                    `<b>Quan trọng:</b> Vì <code>q.dau === nothing</code>, phải xóa luôn <code>q.cuoi = nothing</code> để tránh lỗi con trỏ rác!`,
+                    `Giảm <code>q.so_luong</code> về 0.`
+                ];
+                codeLines = [
+                    { text: `val = q.dau.gia_tri        # val = ${payload.val}`, active: true },
+                    { text: 'q.dau = q.dau.tiep         # q.dau === nothing', active: true },
+                    { text: 'if q.dau === nothing', active: true },
+                    { text: '    q.cuoi = nothing       # Xóa sạch con trỏ đuôi', active: true },
+                    { text: 'end; q.so_luong -= 1', active: true }
+                ];
+            } else if (type === 'peek') {
+                badge.textContent = `XEM KHÔNG XÓA: ${payload.fn} -> ${payload.val}`;
+                title.textContent = `Đọc giá trị (${payload.val}) mà không làm thay đổi cấu trúc hàng đợi`;
+                steps = [
+                    `Kiểm tra hàng đợi không rỗng (<code>n = ${queue.kich_thuoc()} > 0</code>).`,
+                    `Trả về trực tiếp giá trị <code>${payload.val}</code> với chi phí O(1).`,
+                    `Bảo toàn nguyên vẹn các nút và số lượng <code>n = ${queue.kich_thuoc()}</code>.`
+                ];
+                codeLines = [
+                    { text: `function ${payload.fn}(q::HangDoiLienKet)`, active: false },
+                    { text: '    la_rong(q) && throw(ArgumentError("Hang rong"))', active: false },
+                    { text: `    return ${payload.target}.gia_tri # = ${payload.val}`, active: true },
+                    { text: 'end', active: false }
+                ];
+            } else if (type === 'error') {
+                badge.textContent = 'NGOẠI LỆ / TỪ CHỐI DỮ LIỆU';
+                title.textContent = payload.msg;
+                steps = [
+                    `Bộ kiểm tra hợp đồng dữ liệu (Validator / Guard) phát hiện thao tác không hợp lệ.`,
+                    `Ném ngoại lệ <code>ArgumentError</code> ngay lập tức để bảo vệ tính toàn vẹn của hàng đợi.`,
+                    `Trạng thái hàng đợi được giữ nguyên an toàn.`
+                ];
+                codeLines = [
+                    { text: '# Kiểm tra điều kiện tiên quyết (Pre-conditions)', active: false },
+                    { text: 'if !hop_le(du_lieu_hoac_trang_thai)', active: true },
+                    { text: '    throw(ArgumentError("Du lieu/Thao tac khong hop le!"))', active: true },
+                    { text: 'end', active: false }
+                ];
+            }
+
+            stepsList.innerHTML = steps.map((s, idx) => `
+                <li>
+                    <span class="step-num">${idx + 1}</span>
+                    <span>${s}</span>
+                </li>
+            `).join('');
+
+            codeBox.innerHTML = codeLines.map(line => `
+                <div class="code-line ${line.active ? 'active-line' : ''}">${line.text}</div>
+            `).join('');
+        }
+
+        /* --------------------------------------------------------------------------
+           PHẦN 4: VẼ TRỰC QUAN CÁC NÚT & CON TRỎ TRONG HÀNG ĐỢI
+           -------------------------------------------------------------------------- */
+        const queue = new LinkedQueue();
+        let currentPresetId = 1;
+        let currentStepIndex = -1;
+        let autoPlayTimer = null;
+        let activeTab = 'terminal';
+        const logs = [];
+
+        function renderQueue(highlightType = null) {
+            const n = queue.kich_thuoc();
+            document.getElementById('metricSize').textContent = n;
+
+            const headVal = queue.dau ? `Node(${queue.dau.gia_tri})` : 'nothing';
+            const tailVal = queue.cuoi ? `Node(${queue.cuoi.gia_tri})` : 'nothing';
+            document.getElementById('metricHead').textContent = headVal;
+            document.getElementById('metricTail').textContent = tailVal;
+
+            const isInv = queue.kiem_tra_bat_bien();
+            const invMetric = document.getElementById('metricInvariant');
+            const invBanner = document.getElementById('invariantBanner');
+            const invText = document.getElementById('invariantText');
+
+            if (isInv) {
+                invMetric.textContent = 'HỢP LỆ';
+                invBanner.className = 'invariant-banner';
+                if (n === 0) {
+                    invText.textContent = '✅ Bất biến bảo toàn: n=0 ⇔ dau === nothing && cuoi === nothing.';
+                } else {
+                    invText.textContent = `✅ Bất biến bảo toàn: n=${n} > 0 ⇔ dau !== nothing && cuoi !== nothing && cuoi.tiep === nothing.`;
+                }
+            } else {
+                invMetric.textContent = 'VI PHẠM';
+                invBanner.className = 'invariant-banner invalid';
+                invText.textContent = '❌ Bất biến cấu trúc bị vi phạm!';
+            }
+
+            const container = document.getElementById('nodesList');
+            container.innerHTML = '';
+
+            if (n === 0) {
+                container.innerHTML = `
+                    <div class="empty-placeholder">
+                        <div style="font-size: 2rem; opacity: 0.65;">📭</div>
+                        <div style="font-weight: 700;">Hàng đợi đang rỗng (so_luong = 0)</div>
+                        <div style="font-size: 0.76rem; font-family: 'Fira Code', monospace;">dau = nothing &nbsp;|&nbsp; cuoi = nothing</div>
+                    </div>
+                `;
+                return;
+            }
+
+            let curr = queue.dau;
+            let idx = 0;
+            while (curr !== null) {
+                const isHead = (idx === 0);
+                const isTail = (idx === n - 1);
+
+                const wrapper = document.createElement('div');
+                wrapper.className = `node-wrapper ${isHead ? 'is-head' : ''} ${isTail ? 'is-tail' : ''}`;
+
+                if (highlightType === 'enqueue' && isTail) {
+                    wrapper.classList.add('highlight-enqueue');
+                } else if (highlightType === 'peek' && isHead) {
+                    wrapper.classList.add('highlight-peek');
+                }
+
+                // Nhãn con trỏ dau (Front) ở phía trên
+                if (isHead) {
+                    const headTag = document.createElement('div');
+                    headTag.className = 'pointer-tag head';
+                    headTag.textContent = (isHead && isTail) ? 'dau === cuoi' : 'dau (Head)';
+                    wrapper.appendChild(headTag);
+                }
+
+                // Nhãn con trỏ cuoi (Rear) ở phía dưới
+                if (isTail) {
+                    const tailTag = document.createElement('div');
+                    tailTag.className = 'pointer-tag tail';
+                    tailTag.textContent = 'cuoi (Tail)';
+                    wrapper.appendChild(tailTag);
+                }
+
+                // Hộp hiển thị cấu trúc Node gồm 2 trường: gia_tri và tiep
+                const box = document.createElement('div');
+                box.className = 'node-box';
+                box.innerHTML = `
+                    <div class="node-index-bar">
+                        <span>Node #${idx + 1}</span>
+                        <span>tiep</span>
+                    </div>
+                    <div class="node-cells">
+                        <div class="node-val">${curr.gia_tri}</div>
+                        <div class="node-next">${isTail ? 'null' : '●──'}</div>
+                    </div>
+                `;
+                wrapper.appendChild(box);
+
+                // Mũi tên liên kết sang nút kế tiếp hoặc trỏ về nothing
+                if (!isTail) {
+                    const arrow = document.createElement('div');
+                    arrow.className = 'node-arrow';
+                    arrow.innerHTML = '➔';
+                    wrapper.appendChild(arrow);
+                } else {
+                    const nullSign = document.createElement('div');
+                    nullSign.className = 'node-arrow-tail-null';
+                    nullSign.innerHTML = '➔ <span>nothing</span>';
+                    wrapper.appendChild(nullSign);
+                }
+
+                container.appendChild(wrapper);
+                curr = curr.tiep;
+                idx++;
+            }
+        }
+
+        /* --------------------------------------------------------------------------
+           PHẦN 5: HỆ THỐNG GHI NHẬT KÝ (TERMINAL LOG & BẢNG TRACE)
+           -------------------------------------------------------------------------- */
+        function addLog(type, msg) {
+            const time = new Date().toLocaleTimeString('vi-VN');
+            logs.push({ time, type, msg });
+            renderLogs();
+        }
+
+        function renderLogs() {
+            const body = document.getElementById('consoleBody');
+            body.innerHTML = '';
+
+            if (activeTab === 'terminal') {
+                logs.forEach(l => {
+                    const row = document.createElement('div');
+                    row.className = 'log-entry';
+                    row.innerHTML = `<span class="log-time">[${l.time}]</span> <span class="log-msg ${l.type}">${l.msg}</span>`;
+                    body.appendChild(row);
+                });
+            } else {
+                const table = document.createElement('div');
+                table.innerHTML = `
+                    <div style="color: #a5b4fc; margin-bottom: 0.4rem; font-weight:700;">BẢNG TRACE CÁC THAO TÁC DT070:</div>
+                    <div style="color: #9ca3af; margin-bottom: 0.4rem; border-bottom: 1px solid #374151; padding-bottom: 0.25rem;">
+                        Bước | Lệnh thực thi | dau | cuoi | n | Danh sách FIFO hiện tại
+                    </div>
+                `;
+                logs.filter(l => l.type === 'trace').forEach((l, idx) => {
+                    const row = document.createElement('div');
+                    row.style.marginBottom = '0.25rem';
+                    row.textContent = `${idx + 1}. ${l.msg}`;
+                    table.appendChild(row);
+                });
+                body.appendChild(table);
+            }
+            body.scrollTop = body.scrollHeight;
+        }
+
+        function switchTab(tab) {
+            activeTab = tab;
+            const tabs = document.querySelectorAll('.console-tab');
+            tabs[0].classList.toggle('active', tab === 'terminal');
+            tabs[1].classList.toggle('active', tab === 'trace');
+            renderLogs();
+        }
+
+        function clearConsoleLog() {
+            logs.length = 0;
+            renderLogs();
+        }
+
+        function copyConsoleLog() {
+            const text = logs.map(l => `[${l.time}] ${l.msg}`).join('\n');
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textarea);
+
+            const btn = document.getElementById('btnCopyLog');
+            const oldText = btn.textContent;
+            btn.textContent = '✅ Đã sao chép!';
+            setTimeout(() => { btn.textContent = oldText; }, 1500);
+        }
+
+        /* --------------------------------------------------------------------------
+           PHẦN 6: XỬ LÝ TƯƠNG TÁC THỦ CÔNG CỦA NGƯỜI DÙNG
+           -------------------------------------------------------------------------- */
+        function handleCustomEnqueue() {
+            const input = document.getElementById('customInput');
+            const val = parseInt(input.value, 10);
+            try {
+                const { wasEmpty } = queue.them(val);
+                updateExplainer(wasEmpty ? 'enqueue_empty' : 'enqueue_normal', { x: val });
+                addLog('success', `+ them!(q, ${val}) -> Đã thêm ${val} vào cuối hàng đợi. n = ${queue.kich_thuoc()}`);
+                addLog('trace', `them(${val}) | dau=${queue.dau.gia_tri} | cuoi=${queue.cuoi.gia_tri} | n=${queue.kich_thuoc()} | [${queue.to_array().join(', ')}]`);
+                renderQueue('enqueue');
+            } catch (err) {
+                updateExplainer('error', { msg: err.message });
+                addLog('error', `❌ ${err.message}`);
+            }
+        }
+
+        function handleDequeue() {
+            try {
+                const { gia_tri_dau, becameEmpty } = queue.lay();
+                updateExplainer(becameEmpty ? 'dequeue_to_empty' : 'dequeue_normal', { val: gia_tri_dau });
+                addLog('warning', `➖ lay!(q) -> Giá trị lấy ra ở đầu (FIFO): ${gia_tri_dau}. Còn lại n = ${queue.kich_thuoc()}`);
+                addLog('trace', `lay()=${gia_tri_dau} | dau=${queue.dau ? queue.dau.gia_tri : 'nothing'} | cuoi=${queue.cuoi ? queue.cuoi.gia_tri : 'nothing'} | n=${queue.kich_thuoc()} | [${queue.to_array().join(', ')}]`);
+                renderQueue();
+            } catch (err) {
+                updateExplainer('error', { msg: err.message });
+                addLog('error', `❌ ${err.message}`);
+            }
+        }
+
+        function handlePeekFront() {
+            try {
+                const val = queue.xem_dau();
+                updateExplainer('peek', { fn: 'xem_dau', target: 'q.dau', val });
+                addLog('info', `👁️ xem_dau(q) -> Đầu hàng đợi là: ${val} (n=${queue.kich_thuoc()} không đổi)`);
+                renderQueue('peek');
+            } catch (err) {
+                updateExplainer('error', { msg: err.message });
+                addLog('error', `❌ ${err.message}`);
+            }
+        }
+
+        function handlePeekRear() {
+            try {
+                const val = queue.xem_cuoi();
+                updateExplainer('peek', { fn: 'xem_cuoi', target: 'q.cuoi', val });
+                addLog('info', `👁️ xem_cuoi(q) -> Cuối hàng đợi là: ${val} (n=${queue.kich_thuoc()} không đổi)`);
+                renderQueue('peek');
+            } catch (err) {
+                updateExplainer('error', { msg: err.message });
+                addLog('error', `❌ ${err.message}`);
+            }
+        }
+
+        function handleRandomEnqueue() {
+            const randVal = Math.floor(Math.random() * 180) - 40;
+            document.getElementById('customInput').value = randVal;
+            handleCustomEnqueue();
+        }
+
+        function handleClearQueue() {
+            while (!queue.la_rong()) {
+                queue.lay();
+            }
+            updateExplainer('init');
+            addLog('info', '🗑️ Đã xóa rỗng hàng đợi (Clear). dau = nothing, cuoi = nothing, n = 0');
+            renderQueue();
+        }
+
+        function executeBatchScript() {
+            const raw = document.getElementById('batchText').value.trim();
+            if (!raw) return;
+            const commands = raw.split(/[,;\n]+/).map(s => s.trim()).filter(Boolean);
+
+            commands.forEach(cmd => {
+                const matchThem = cmd.match(/^them\s*\(\s*(-?\d+)\s*\)$/i);
+                if (matchThem) {
+                    const num = parseInt(matchThem[1], 10);
+                    try {
+                        const { wasEmpty } = queue.them(num);
+                        updateExplainer(wasEmpty ? 'enqueue_empty' : 'enqueue_normal', { x: num });
+                        addLog('success', `+ ${cmd} -> OK`);
+                        addLog('trace', `them(${num}) | dau=${queue.dau.gia_tri} | cuoi=${queue.cuoi.gia_tri} | n=${queue.kich_thuoc()} | [${queue.to_array().join(', ')}]`);
+                    } catch (e) {
+                        updateExplainer('error', { msg: e.message });
+                        addLog('error', e.message);
+                    }
+                    return;
+                }
+                if (/^lay\s*\(\s*\)$/i.test(cmd)) {
+                    try {
+                        const { gia_tri_dau, becameEmpty } = queue.lay();
+                        updateExplainer(becameEmpty ? 'dequeue_to_empty' : 'dequeue_normal', { val: gia_tri_dau });
+                        addLog('warning', `➖ ${cmd} -> Lấy ${gia_tri_dau}`);
+                        addLog('trace', `lay()=${gia_tri_dau} | dau=${queue.dau ? queue.dau.gia_tri : 'nothing'} | cuoi=${queue.cuoi ? queue.cuoi.gia_tri : 'nothing'} | n=${queue.kich_thuoc()} | [${queue.to_array().join(', ')}]`);
+                    } catch (e) {
+                        updateExplainer('error', { msg: e.message });
+                        addLog('error', e.message);
+                    }
+                    return;
+                }
+                if (/^xem_dau\s*\(\s*\)$/i.test(cmd)) {
+                    try {
+                        const v = queue.xem_dau();
+                        updateExplainer('peek', { fn: 'xem_dau', target: 'q.dau', val: v });
+                        addLog('info', `👁️ ${cmd} -> ${v}`);
+                    } catch (e) {
+                        updateExplainer('error', { msg: e.message });
+                        addLog('error', e.message);
+                    }
+                    return;
+                }
+                addLog('error', `Lệnh không hợp lệ: ${cmd}`);
+            });
+            renderQueue();
+        }
+
+        /* --------------------------------------------------------------------------
+           PHẦN 7: KỊCH BẢN 8 CA DEMO CHUẨN (A01 - A08) & TRÌNH CHẠY TỪNG BƯỚC
+           -------------------------------------------------------------------------- */
+        const presets = {
+            1: {
+                title: "DEMO 1 (A01): Thêm/Lấy FIFO & Nối đuôi O(1)",
+                steps: [
+                    { op: 'init', desc: 'Khởi tạo hàng đợi rỗng' },
+                    { op: 'them', val: 4, desc: 'them!(q, 4)' },
+                    { op: 'them', val: 7, desc: 'them!(q, 7)' },
+                    { op: 'lay', desc: 'lay!(q) -> Lấy phần tử 4 ở đầu (FIFO)' },
+                    { op: 'them', val: 9, desc: 'them!(q, 9) -> Nối trực tiếp sau 7 qua cuoi.tiep O(1)' }
+                ]
+            },
+            2: {
+                title: "DEMO 2 (A02): Lấy cạn về rỗng & Khởi tạo lại (Xóa sạch đuôi)",
+                steps: [
+                    { op: 'init', desc: 'Khởi tạo hàng đợi rỗng' },
+                    { op: 'them', val: 5, desc: 'them!(q, 5)' },
+                    { op: 'lay', desc: 'lay!(q) -> Lấy 5, hàng về rỗng, xóa cuoi=nothing an toàn' },
+                    { op: 'them', val: 8, desc: 'them!(q, 8) -> Tạo nút mới dau=cuoi=Node(8)' }
+                ]
+            },
+            3: {
+                title: "DEMO 3 (A03): Buffer tác vụ đa chu kỳ (Xen kẽ thêm/lấy)",
+                steps: [
+                    { op: 'init', desc: 'Khởi tạo hàng đợi tiến trình' },
+                    { op: 'them', val: 100, desc: 'Nạp tác vụ 100' },
+                    { op: 'them', val: 200, desc: 'Nạp tác vụ 200' },
+                    { op: 'them', val: 300, desc: 'Nạp tác vụ 300' },
+                    { op: 'lay', desc: 'Phục vụ tác vụ đầu tiên 100' },
+                    { op: 'them', val: 400, desc: 'Nạp thêm tác vụ 400' },
+                    { op: 'them', val: 500, desc: 'Nạp thêm tác vụ 500' },
+                    { op: 'lay', desc: 'Phục vụ tác vụ 200' },
+                    { op: 'lay', desc: 'Phục vụ tác vụ 300' }
+                ]
+            },
+            4: {
+                title: "DEMO 4 (A04): Số âm, số 0 & cận biên [-1000, 1000]",
+                steps: [
+                    { op: 'init', desc: 'Khởi tạo hàng đợi' },
+                    { op: 'them', val: -500, desc: 'them!(q, -500)' },
+                    { op: 'them', val: 0, desc: 'them!(q, 0)' },
+                    { op: 'them', val: 1000, desc: 'them!(q, 1000) (Biên trên)' },
+                    { op: 'them', val: -999, desc: 'them!(q, -999) (Gần biên dưới)' },
+                    { op: 'lay', desc: 'lay!(q) -> Lấy -500' },
+                    { op: 'lay', desc: 'lay!(q) -> Lấy 0' }
+                ]
+            },
+            5: {
+                title: "DEMO 5 (A05): Hàng đợi rỗng & Bắt lỗi Underflow (n=0)",
+                steps: [
+                    { op: 'init', desc: 'Khởi tạo hàng đợi rỗng mới (n=0)' },
+                    { op: 'error_peek', desc: 'Thử xem_dau(q) trên hàng rỗng => Ném ArgumentError' },
+                    { op: 'error_lay', desc: 'Thử lay!(q) trên hàng rỗng => Ném ArgumentError (Underflow)' }
+                ]
+            },
+            6: {
+                title: "DEMO 6 (A06): Các phần tử trùng giá trị (Node độc lập)",
+                steps: [
+                    { op: 'init', desc: 'Khởi tạo hàng đợi' },
+                    { op: 'them', val: 4, desc: 'them!(q, 4) lần 1' },
+                    { op: 'them', val: 4, desc: 'them!(q, 4) lần 2 (2 Node độc lập trong bộ nhớ)' },
+                    { op: 'lay', desc: 'lay!(q) -> Lấy số 4 đầu tiên, số 4 thứ hai còn nguyên' }
+                ]
+            },
+            7: {
+                title: "DEMO 7 (A07): Xem đầu liên tiếp bảo toàn kích thước",
+                steps: [
+                    { op: 'init', desc: 'Khởi tạo hàng đợi' },
+                    { op: 'them', val: 6, desc: 'them!(q, 6)' },
+                    { op: 'peek_front', desc: 'xem_dau(q) lần 1 -> Đọc 6, n=1 không đổi' },
+                    { op: 'peek_front', desc: 'xem_dau(q) lần 2 -> Đọc 6, n=1 vẫn giữ nguyên' }
+                ]
+            },
+            8: {
+                title: "DEMO 8 (A08): Chặn dữ liệu ngoài miền [-1000, 1000]",
+                steps: [
+                    { op: 'init', desc: 'Khởi tạo hàng đợi' },
+                    { op: 'error_val', val: 1500, desc: 'Thử them!(q, 1500) ngoài [-1000, 1000] => Ném ArgumentError' },
+                    { op: 'error_val', val: -1200, desc: 'Thử them!(q, -1200) ngoài [-1000, 1000] => Ném ArgumentError' },
+                    { op: 'them', val: 50, desc: 'them!(q, 50) hợp lệ' }
+                ]
+            }
+        };
+
+        function updateStepProgressUI() {
+            const p = presets[currentPresetId];
+            const badge = document.getElementById('stepProgressBadge');
+            badge.textContent = `Bước ${Math.max(1, currentStepIndex + 1)} / ${p.steps.length}`;
+        }
+
+        function loadPreset(id) {
+            currentPresetId = id;
+            document.querySelectorAll('.btn-preset').forEach((b, idx) => {
+                b.classList.toggle('active', (idx + 1) === id);
+            });
+
+            if (autoPlayTimer) toggleAutoRun();
+
+            while (!queue.la_rong()) queue.lay();
+            logs.length = 0;
+            currentStepIndex = -1;
+
+            const p = presets[id];
+            addLog('info', `=== BẮT ĐẦU ${p.title.toUpperCase()} ===`);
+            renderQueue();
+            stepForward();
+        }
+
+        function resetCurrentPreset() {
+            loadPreset(currentPresetId);
+        }
+
+        function stepForward() {
+            const p = presets[currentPresetId];
+            if (currentStepIndex + 1 >= p.steps.length) {
+                addLog('info', `🏁 Đã hoàn thành toàn bộ các bước của ${p.title}.`);
+                if (autoPlayTimer) toggleAutoRun();
+                return;
+            }
+
+            currentStepIndex++;
+            updateStepProgressUI();
+            const step = p.steps[currentStepIndex];
+
+            if (step.op === 'init') {
+                updateExplainer('init');
+                addLog('info', `[Bước ${currentStepIndex + 1}/${p.steps.length}] ${step.desc}`);
+                renderQueue();
+            } else if (step.op === 'them') {
+                const { wasEmpty } = queue.them(step.val);
+                updateExplainer(wasEmpty ? 'enqueue_empty' : 'enqueue_normal', { x: step.val });
+                addLog('success', `[Bước ${currentStepIndex + 1}/${p.steps.length}] ${step.desc}`);
+                addLog('trace', `them(${step.val}) | dau=${queue.dau.gia_tri} | cuoi=${queue.cuoi.gia_tri} | n=${queue.kich_thuoc()} | [${queue.to_array().join(', ')}]`);
+                renderQueue('enqueue');
+            } else if (step.op === 'lay') {
+                const { gia_tri_dau, becameEmpty } = queue.lay();
+                updateExplainer(becameEmpty ? 'dequeue_to_empty' : 'dequeue_normal', { val: gia_tri_dau });
+                addLog('warning', `[Bước ${currentStepIndex + 1}/${p.steps.length}] ${step.desc} (Giá trị: ${gia_tri_dau})`);
+                addLog('trace', `lay()=${gia_tri_dau} | dau=${queue.dau ? queue.dau.gia_tri : 'nothing'} | cuoi=${queue.cuoi ? queue.cuoi.gia_tri : 'nothing'} | n=${queue.kich_thuoc()} | [${queue.to_array().join(', ')}]`);
+                renderQueue();
+            } else if (step.op === 'peek_front') {
+                const v = queue.xem_dau();
+                updateExplainer('peek', { fn: 'xem_dau', target: 'q.dau', val: v });
+                addLog('info', `[Bước ${currentStepIndex + 1}/${p.steps.length}] ${step.desc} (Đọc: ${v})`);
+                renderQueue('peek');
+            } else if (step.op === 'error_peek') {
+                try {
+                    queue.xem_dau();
+                } catch (e) {
+                    updateExplainer('error', { msg: e.message });
+                    addLog('error', `[Bước ${currentStepIndex + 1}/${p.steps.length}] ${step.desc}: ${e.message}`);
+                }
+            } else if (step.op === 'error_lay') {
+                try {
+                    queue.lay();
+                } catch (e) {
+                    updateExplainer('error', { msg: e.message });
+                    addLog('error', `[Bước ${currentStepIndex + 1}/${p.steps.length}] ${step.desc}: ${e.message}`);
+                }
+            } else if (step.op === 'error_val') {
+                try {
+                    queue.them(step.val);
+                } catch (e) {
+                    updateExplainer('error', { msg: e.message });
+                    addLog('error', `[Bước ${currentStepIndex + 1}/${p.steps.length}] ${step.desc}`);
+                }
+            }
+        }
+
+        function stepBackward() {
+            if (currentStepIndex <= 0) return;
+            const target = currentStepIndex - 1;
+
+            while (!queue.la_rong()) queue.lay();
+            logs.length = 0;
+            currentStepIndex = -1;
+
+            const p = presets[currentPresetId];
+            addLog('info', `=== BẮT ĐẦU ${p.title.toUpperCase()} ===`);
+            while (currentStepIndex < target) {
+                stepForward();
+            }
+        }
+
+        function toggleAutoRun() {
+            const btn = document.getElementById('btnAutoPlay');
+            if (autoPlayTimer) {
+                clearInterval(autoPlayTimer);
+                autoPlayTimer = null;
+                btn.textContent = '⏯️ Tự động chạy';
+            } else {
+                const speed = parseInt(document.getElementById('speedSlider').value, 10);
+                btn.textContent = '⏸️ Tạm dừng';
+                autoPlayTimer = setInterval(() => {
+                    const p = presets[currentPresetId];
+                    if (currentStepIndex + 1 >= p.steps.length) {
+                        toggleAutoRun();
+                    } else {
+                        stepForward();
+                    }
+                }, speed);
+            }
+        }
+
+        // Khởi chạy ứng dụng khi tải trang
+        window.addEventListener('DOMContentLoaded', () => {
+            initTheme();
+            loadPreset(1);
+
+            document.getElementById('speedSlider').addEventListener('input', (e) => {
+                document.getElementById('speedVal').textContent = (e.target.value / 1000).toFixed(1) + 's';
+                if (autoPlayTimer) {
+                    toggleAutoRun();
+                    toggleAutoRun();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
