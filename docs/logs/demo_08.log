@@ -11,13 +11,13 @@ Cac dieu kien kiem tra theo hop dong phieu:
   3. Lenh thao tac khong hop le
 
 Thu nghiem 1: Gia tri them x = 1500 (ngoai [-1000, 1000]):
-  DA TU CHOI DU LIEU: ArgumentError: Lá»—i táº¡i pháº§n tá»­ 1: GiÃ¡ trá»‹ 1500 náº±m ngoÃ i pháº¡m vi [-1000, 1000]!
+  DA TU CHOI DU LIEU: ArgumentError: Lỗi tại phần tử 1: Giá trị 1500 nằm ngoài phạm vi [-1000, 1000]!
 
 Thu nghiem 2: Lenh khong hop le (:lenh_sai):
-  DA TU CHOI DU LIEU: ArgumentError: Lá»—i táº¡i pháº§n tá»­ 1: Lá»‡nh 'lenh_sai' khÃ´ng há»£p lá»‡!
+  DA TU CHOI DU LIEU: ArgumentError: Lỗi tại phần tử 1: Lệnh 'lenh_sai' không hợp lệ!
 
 Thu nghiem 3: Lay phan tu tren hang doi rong:
-  DA TU CHOI DU LIEU: ArgumentError: Lá»—i: HÃ ng Ä‘á»£i rá»—ng, khÃ´ng thá»ƒ láº¥y pháº§n tá»­ (Underflow)!
+  DA TU CHOI DU LIEU: ArgumentError: Lỗi: Hàng đợi rỗng, không thể lấy phần tử (Underflow)!
 
 -----------------------------------------------------------------
 KET QUA MINH HOA: DUNG; tat ca loi du kien da duoc bat an toan.

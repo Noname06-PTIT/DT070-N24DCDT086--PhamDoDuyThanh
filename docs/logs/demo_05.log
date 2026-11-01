@@ -12,10 +12,10 @@ Trang thai hang moi khoi tao:
   - Bat bien:      true
 
 Thu lay!(q) tren hang doi rong:
-  => Bat ngoai le ArgumentError thanh cong: ArgumentError: Lá»—i: HÃ ng Ä‘á»£i rá»—ng, khÃ´ng thá»ƒ láº¥y pháº§n tá»­ (Underflow)!
+  => Bat ngoai le ArgumentError thanh cong: ArgumentError: Lỗi: Hàng đợi rỗng, không thể lấy phần tử (Underflow)!
 
 Thu xem_dau(q) tren hang doi rong:
-  => Bat ngoai le ArgumentError thanh cong: ArgumentError: Lá»—i: HÃ ng Ä‘á»£i rá»—ng, khÃ´ng thá»ƒ xem Ä‘áº§u!
+  => Bat ngoai le ArgumentError thanh cong: ArgumentError: Lỗi: Hàng đợi rỗng, không thể xem đầu!
 
 Ket luan: Hang doi rong duoc xu ly an toan tuyet doi theo Ca 1 cua phieu.
 
