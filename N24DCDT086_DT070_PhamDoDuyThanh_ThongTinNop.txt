@@ -11,8 +11,8 @@ URL GitHub that: https://github.com/Noname06-PTIT/DT070-N24DCDT086--PhamDoDuyTha
 SHA C day du cua ma/test/input dung chay va chup anh: 27e66d55a608e3abfbb34e6a5669785305406d4e
 Permalink tep thuat toan chinh tai C: https://github.com/Noname06-PTIT/DT070-N24DCDT086--PhamDoDuyThanh/blob/27e66d55a608e3abfbb34e6a5669785305406d4e/src/LinkedQueue.jl
 Permalink tep kiem thu tai C: https://github.com/Noname06-PTIT/DT070-N24DCDT086--PhamDoDuyThanh/blob/27e66d55a608e3abfbb34e6a5669785305406d4e/test/runtests.jl
-SHA S day du cua phien ban nop cuoi: 12af5371dc64500b8141280f7071074073739dfc
-Xac nhan ma/test/input khong doi giua C va S, hoac mo ta phan da chay lai: Ma nguon, test suite, cac script va du lieu dau vao khong thay doi giua C va S. Commit S chi bo sung 11 anh chup ket qua thuc thi va cac file log goc de minh chung.
+SHA S day du cua phien ban nop cuoi: c217946d1d9fa8234cd52c4aa457b3048d29aa00
+Xac nhan ma/test/input khong doi giua C va S, hoac mo ta phan da chay lai: Ma nguon thuat toan goc, bo test 244 asserts va input chuan duoc dong bang tai C (27e66d55a608e3abfbb34e6a5669785305406d4e). Phien ban S cap nhat du 11 anh chup ket qua thuc thi, demo truc quan HTML, cac file log UTF-8 goc va anh chup GitHub that. Toan bo bo kiem thu (244/244) va 20.000 thao tac oracle deu da chay lai thanh cong 100%.
 
 Ngon ngu va phien ban: Julia version 1.12.7 (chi su dung thu vien chuan Test va Printf)
 Lenh chay vi du 1: julia --startup-file=no demo.jl --ca=1

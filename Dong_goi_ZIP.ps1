@@ -40,8 +40,13 @@ if (Test-Path (Join-Path $sourceDir ".gitignore")) {
 
 Get-ChildItem -Path $destFolder -Recurse -Include ".git*", ".vscode*", "*.tmp", "*.cache" -Force | Remove-Item -Recurse -Force
 
-Compress-Archive -Path (Join-Path $stagingDir "*") -DestinationPath $zipOutputPath -CompressionLevel Optimal
-Remove-Item -Recurse -Force $stagingDir
+try {
+    Compress-Archive -Path (Join-Path $stagingDir "*") -DestinationPath $zipOutputPath -CompressionLevel Optimal
+} catch {
+    Write-Warning "PowerShell Compress-Archive gap khoa tep mo, chuyen sang dong goi Python..."
+    python -c "import os, zipfile; zf = zipfile.ZipFile(r'$zipOutputPath', 'w', zipfile.ZIP_DEFLATED); [zf.write(os.path.join(r, f), os.path.relpath(os.path.join(r, f), r'$stagingDir')) for r, d, fs in os.walk(r'$stagingDir') for f in fs]; zf.close()"
+}
+Remove-Item -Recurse -Force $stagingDir -ErrorAction SilentlyContinue
 
 Write-Output "========================================================="
 Write-Output "DA TAO THANH CONG TEP ZIP CHUAN NOP BAI:"
